@@ -1,0 +1,173 @@
+/** Promotional Banners **/
+.promoBanner {
+  min-height: 60px;
+  background: #000;
+  color: #FFF;
+  padding-right: 6px;
+  position: relative;
+}
+
+.promoBanner .tooltip:before {
+  color: #FFF
+}
+
+/** Specific Radio Button and Checkbox Label styles **/
+.radioLabel {
+  width: calc(100% - 25px);
+}
+.checkboxLabel {
+  width: calc(100% - 30px);
+}
+
+/** Shipping Information Text Updates styling **/
+.textUpdatesContainer {
+  width: 200px;
+  max-width: 100%;
+}
+
+/** Terms and Conditions Start **/
+.terms_external .row {
+  display: block;
+  margin: 0;
+  flex: none;
+}
+
+.terms_external h3,
+.terms_external h4 {
+  font-size: 1.3rem;
+  color: #000;
+}
+
+/* Overiding Flex grid so noPad works*/
+[class^="col-"].noPad {
+  padding: 0;
+}
+
+/** Ordersummary Accordion Changes  **/
+
+.accordionItem {
+  min-height: 50px;
+}
+
+.orderSummary .row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.orderSummary .accordion .row>[class^="col-"]:first-child {
+  padding-left: 0;
+}
+
+.orderSummary .accordion .row>[class^="col-"]:last-child {
+  padding-right: 0;
+}
+
+.orderSummary .accordion__body>*:last-child {
+  margin-bottom: 12px;
+}
+
+/* Order Summary Section Behavior */
+@media only screen and (max-width: 983px) {
+  .mainContent,
+  .sideBarContent {
+    -ms-flex-preferred-size: 100% !important;
+    flex-basis: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Masterpass Icon and CTA - SVG links are from masterpass webesite */
+.masterpassIcon{
+  padding: 5px 14px;
+  border-radius: 4px;
+  border: 1px solid #a8a8a8;
+  box-shadow: 0px 0px 0px 0.4px #a8a8a8 inset;
+  height: 40px;
+}
+.masterpassButton{
+  padding: 12px 8px;
+  border-radius: 4px;
+  border: 1px solid #000000;
+  height: 48px;
+  width: 170px;
+  cursor: pointer;
+}
+
+/* Card Icons for saved cards, taken from ATG */
+.creditCards {
+  display: inline-block;
+  width: 35px;
+  height: 20px;
+  float: left;
+  margin-right: 5px;
+  opacity: .5;
+  text-indent: -9999px;
+  background-size: cover !important;
+  position: absolute;
+  top: 16px;
+  left: 10px;
+}
+
+.creditCards.m_entered {
+  opacity: 1
+}
+
+.creditCards.m_visa {
+  background-position: 0 -302px !important;
+}
+
+.creditCards.m_visa.m_entered {
+  background-position: 0 -100px !important;
+}
+
+.creditCards.m_masterCard {
+  background-position: 0 -251px !important;
+}
+
+.creditCards.m_masterCard.m_entered {
+  background-position: 0 -50px !important;
+}
+
+.creditCards.m_amex {
+  background-position: 0 -150px !important;
+}
+
+.creditCards.m_amex.m_entered {
+  background-position: 0 0 !important;
+}
+
+.creditCards.m_discover {
+  background-position: 0 -351px !important;
+}
+
+.creditCards.m_discover.m_entered {
+  background-position: 0 -202px !important;
+}
+
+/* Device Information Changes */
+.deviceServiceAddress {
+  text-overflow: ellipsis;
+  max-width: calc(100% - 25px);
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+button:focus,
+a:focus,
+select:focus,
+.accordion__title:focus,
+.checkbox:focus~label:before,
+.radioBtn:focus+label:before,
+.textField:focus-within>div {
+  outline: #000 dotted 1px !important;
+  outline-offset: 1px;
+}
+
+button.tooltip.white:focus {
+  outline: #FFF dotted 1px !important;
+  outline-offset: 1px;
+}
+
+
+

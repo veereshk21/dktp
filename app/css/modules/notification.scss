@@ -1,0 +1,105 @@
+/********************************************************
+ Custom styles for notification bar.
+
+**********************************************************/
+
+.notification {
+  width: 100%;
+  padding: 15px;
+  color: #000;
+  font-size: 14px;
+  font-size: 1.4rem;
+  font-family: NeueHaasGroteskDisplayBold, Arial, Helvetica, sans-serif;
+}
+
+.notification.m-warning {
+  background-color: #FFBC3D;
+  color: #000;
+}
+
+.notification.m-info {
+  background-color: #0088CE ;
+  color: #fff;
+  .notification_icon {
+    border: 1px solid #fff;
+  }
+}
+
+.notification_wrap {
+  display: flex;
+  flex-direction:row;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.notification_close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.notification_close::after {
+  content: "\2715";
+}
+
+.notification_iconwrap {
+  vertical-align: middle;
+}
+
+.notification_icon {
+  width: 36px;
+  height: 36px;
+  background-color: #069c20;
+}
+
+.notification_icon.m-info::after {
+  font-family: 'vzwIcons';
+  content: '\e0a7';
+  position: relative;
+  font-size: 2rem;
+  color: #fff;
+  left: 1px;
+  top: 3px;
+}
+.notification_icon.m-warning {
+	background-color: transparent;
+}
+
+.notification_icon.m-warning::after {
+	font-family: 'vzwIcons';
+  content: '\e02d';
+  position: relative;
+  font-size: 2.5rem;
+  color: #000;
+}
+
+.notification_content {
+  vertical-align: middle;
+  text-align: left;
+}
+
+/*** Styles for ReactCSSTransistionGroup on nofitication enter and exit **/
+
+.notification-enter {
+  height: 0;
+}
+
+.notification-enter.notification-enter-active {
+  height: 102px;
+  transition: height 500ms ease-in;
+}
+
+.notification-leave {
+  height: 102px;
+}
+
+.notification-leave.notification-leave-active {
+  height: 0;
+  transition: height 400ms ease-in;
+}
+
+
+
+
