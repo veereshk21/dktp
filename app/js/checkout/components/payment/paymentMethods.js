@@ -50,7 +50,8 @@ const PaymentMethods = (props) => {
     let description = null;
     let expansion = null;
     const { paymentType } = paymentOpt;
-    if (paymentType === 'BTA') {
+    const siteId = window.siteId;
+    if (paymentType === 'BTA' && !siteId) {
       // Bill to account
       title = (<p>{cqContent.label.DT_OD_CHECKOUT_PAYMENT_BTA}</p>);
       description = (
@@ -106,7 +107,7 @@ const PaymentMethods = (props) => {
     } else if (paymentType === 'newcard') {
       // New Cards
       title = <p>{cqContent.label.DT_OD_CHECKOUT_PAYMENT_NEW_CARD}</p>;
-    } else if (paymentType === 'applepay') {
+    } else if (paymentType === 'applepay' && !siteId) {
       // ApplePay
       title = <img src="http://s7.vzw.com/is/image/VerizonWireless/card_applepay?fmt=png-alpha" alt={cqContent.label.DT_OD_CHECKOUT_PAYMENT_APPLEPAY_IMG_ALT} height="40px" />;
       expansion = (
@@ -125,7 +126,7 @@ const PaymentMethods = (props) => {
           />
         </button>
       );
-    } else if (paymentType === 'paypal') {
+    } else if (paymentType === 'paypal' && !siteId) {
       // PayPal
       title = <img src="http://s7.vzw.com/is/image/VerizonWireless/card_paypal?fmt=png-alpha" alt={cqContent.label.DT_OD_CHECKOUT_PAYMENT_PAYPAL_IMG_ALT} height="40px" />;
       expansion = (
@@ -138,10 +139,10 @@ const PaymentMethods = (props) => {
           </button>
         </div>
       );
-      if (orderSelectedPaymentMode === 'paypal') {
+      if (orderSelectedPaymentMode === 'paypal' && !siteId) {
         description = <p className="margin36 onlyLeftMargin pad6 noSidePad">{billingInfo.paypalEmailAddress}</p>;
       }
-    } else if (paymentType === 'masterpass') {
+    } else if (paymentType === 'masterpass' && !siteId) {
       // Masterpass
       title = <img src="https://static.masterpass.com/dyn/img/acc/global/mp_mark_ver_blk.svg" className="masterpassIcon" alt={cqContent.label.DT_OD_CHECKOUT_PAYMENT_MASTERPASS_IMG_ALT} />;
       expansion = (
