@@ -39,3 +39,5 @@ export const NOTIFICATIONS = {
   SECURE_PIN: 'secure-pin-modal',
   ISPU: 'ispu-modal',
 };
+
+export const CYBER_SOURCE_DATA = 'CYBER_SOURCE_DATA';

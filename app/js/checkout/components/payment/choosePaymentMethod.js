@@ -41,6 +41,7 @@ class ChoosePaymentMethod extends Component {
   }
 
   componentDidMount = () => {
+    this.props.fetchCyberSourceData(this.props.orderId);
     const {
       handle3dPaymentValidated, dispatchErrorNotification, authInfo, masterpass3DSecure, cqContent,
     } = this.props;
