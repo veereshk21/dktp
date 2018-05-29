@@ -32,6 +32,7 @@ class ChoosePaymentMethod extends Component {
   }
 
   componentWillMount() {
+    this.props.fetchCyberSourceData(this.props.orderId);
     const {
       applePayOption, appleMerchantIdentifier, applePayEnabled, showApplePay,
     } = this.props;
@@ -41,7 +42,6 @@ class ChoosePaymentMethod extends Component {
   }
 
   componentDidMount = () => {
-    this.props.fetchCyberSourceData(this.props.orderId);
     const {
       handle3dPaymentValidated, dispatchErrorNotification, authInfo, masterpass3DSecure, cqContent,
     } = this.props;
@@ -217,11 +217,12 @@ class ChoosePaymentMethod extends Component {
       valid, submitting, forms, showCVV, showGiftCard, selectedRadioButton, paypalFlowCompleted, masterpassFlowCompleted,
     } = this.props;
     let result = (valid && !submitting && forms.choosePaymentMethod && forms.choosePaymentMethod.values);
+    let giftCardCheck = window.siteId ? null : showGiftCard;
     if (result) {
       if (forms.choosePaymentMethod.values.paymentRadio === 'newcard') {
-        result = (forms.addNewCard && !forms.addNewCard.syncErrors) && (showGiftCard ? (forms.giftCardsForm && !forms.giftCardsForm.syncErrors) : true);
+        result = (forms.addNewCard && !forms.addNewCard.syncErrors) && (giftCardCheck ? (forms.giftCardsForm && !forms.giftCardsForm.syncErrors) : true);
       } else if (forms.choosePaymentMethod.values.paymentRadio === 'savedcard' && showCVV) {
-        result = forms.choosePaymentMethod.values.card_cvc && !forms.choosePaymentMethod.syncErrors && (showGiftCard ? (forms.giftCardsForm && !forms.giftCardsForm.syncErrors) : true);
+        result = forms.choosePaymentMethod.values.card_cvc && !forms.choosePaymentMethod.syncErrors && (giftCardCheck ? (forms.giftCardsForm && !forms.giftCardsForm.syncErrors) : true);
       } else if ((selectedRadioButton === 'paypal' && !paypalFlowCompleted) || (selectedRadioButton === 'masterpass' && !masterpassFlowCompleted)) {
         result = false;
       }
@@ -278,6 +279,7 @@ class ChoosePaymentMethod extends Component {
                   cqContent={cqContent}
                   billingInfo={billingInfo}
                   initialValues={newCardInitialValues}
+                  cyberSourceData={this.props.cyberSourceData ? this.props.cyberSourceData : ''}
                 />
               }
             </div>
@@ -312,9 +314,9 @@ class ChoosePaymentMethod extends Component {
             </div>
           </Col>
           <Col xs={12}>
-            {showGiftCard &&
-              <GiftCards />
-            }
+          { showGiftCard && !siteId &&
+            <GiftCards />
+          }
           </Col>
         </Row>
 
@@ -374,6 +376,7 @@ ChoosePaymentMethod.propTypes = {
   giftCardList: PropTypes.array,
   paypalFlowCompleted: PropTypes.bool,
   masterpassFlowCompleted: PropTypes.bool,
+  cyberSourceData: PropTypes.object,
 };
 
 // export default ChoosePaymentMethod;

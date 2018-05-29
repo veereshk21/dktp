@@ -53,6 +53,36 @@ const AddNewCardForm = (props) => {
   const cardNumberActive = props.newCardForm.active === 'card_number';
   const onCardFocus = () => { props.change('card_number', ''); };
   const siteId = window.siteId;
+  const cyberSourceData = props.cyberSourceData ? props.cyberSourceData : '';
+  const onSubmit = (event) => {
+    event.preventDefault();
+    console.log();
+    let cardType = '';
+    const month = this.refs.card_month.value;
+    const year = this.refs.card_year.value;
+    const expiryDate = month + '-' + year;
+    const firstName = this.props.selectedShippingInfo.firstName;
+    const lastName = this.props.selectedShippingInfo.lastName;
+    this.refs.card_expiry.value = expiryDate;
+    this.refs.firstName.value = firstName;
+    this.refs.lastName.value = lastName;
+    const cardName = getCardType(this.refs.card_number.value);
+    if (cardName === 'visa') {
+      cardType = '001';
+    } else if (cardName === 'mastercard') {
+      cardType = '002';
+    } else if (cardName === 'amex') {
+      cardType = '003';
+    } else if (cardName === 'discover') {
+      cardType = '004';
+    }
+    this.refs.card_type.value = cardType;
+    if (this.props.valid) {
+      this.refs.form.submit();
+    } else {
+      alert('not submitted');
+    }
+  };
   return (
     <div className="margin12 onlySideMargin">
      {!siteId && <div className="oneD"> 
@@ -200,6 +230,16 @@ const AddNewCardForm = (props) => {
         <p>{cqContent.label.DT_OD_CHECKOUT_PAYMENT_CREDIT_CARD_ZIP_CODE_LABEL}</p>
         <p className="margin18">{billingInfo.billingAddress.zipcode}</p>
       </div>
+      <div>
+      <form method="post" onSubmit={onSubmit} action={props.cyberSourceData ? props.cyberSourceData.httpPostUrl : ''} >
+
+      { cyberSourceData &&
+                  Object.keys(cyberSourceData.dataMap).map((key) =>
+                    <input type="hidden" name={key} value={cyberSourceData.dataMap[key]} />)
+                  }
+                  <input type="submit" value="submit "/>
+      </form>
+      </div>
     </div>
     </div >
   );
@@ -215,12 +255,14 @@ export default reduxForm({
   form: 'addNewCard',
   destroyOnUnmount: false,
   validate,
-})(connect((state) => {
+})(connect((state, ownProps) => {
   const forms = state.get('form').toJS();
   const cardNumber = selector(state, 'card_number');
+  const cyberSourceData = ownProps.cyberSourceData;
   const cvvLength = cardNumber && validation.getCardType(cardNumber) === 'amex' ? 4 : 3;
   return {
     cvvLength,
     newCardForm: forms.addNewCard ? forms.addNewCard : {},
+    cyberSourceData,
   };
 })(AddNewCardForm));

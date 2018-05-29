@@ -12,7 +12,7 @@ import axios from 'axios';
 import configureStore from './../store';
 import provider from './../provider';
 import createRoutes from './routes';
-import { orderDetails, cqContent, customerAgreement, asyncCallStatus, applePayAvailable, editState, storeDetails } from './reducer';
+import { orderDetails, cqContent, customerAgreement, asyncCallStatus, applePayAvailable, editState, storeDetails, cyberSourceData } from './reducer';
 import { notification } from '../common/NotificationBar/reducer';
 import { EDIT_STATE } from './constants';
 
@@ -53,7 +53,7 @@ axios.get(__webpack_public_path__ + cq).then((result) => {
     },
   };
   const store = configureStore(initialState, {
-    orderDetails, cqContent, customerAgreement, asyncCallStatus, applePayAvailable, notification, editState, storeDetails,
+    orderDetails, cqContent, customerAgreement, asyncCallStatus, applePayAvailable, notification, editState, storeDetails, cyberSourceData,
   });
 
   injectTapEventPlugin(); // Instant TapEvents for React http://facebook.github.io/react/

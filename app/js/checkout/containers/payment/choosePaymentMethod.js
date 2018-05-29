@@ -114,11 +114,13 @@ function mapStateToProps(state) {
   const orderSelectedPaymentMode = getOrderSelectedPaymentMode(paymentOptions, data.billingInfo, data.checkoutStates);
   const initSavedCardIndex = data.billingInfo.savedCardInfo.findIndex((card) => card.preselectCard === true);
   const selectedSavedCardIndex = forms.choosePaymentMethod && forms.choosePaymentMethod.values && forms.choosePaymentMethod.values.savedCard ? parseInt(forms.choosePaymentMethod.values.savedCard, 10) : 0;
-
-
+  const cyberSourceData = Object.keys(state.get('cyberSourceData')).length ? state.get('cyberSourceData').toJS() : {};
   return {
     cqContent,
     pastDuePaymentRequired: data.checkoutStates.pastDuePaymentRequired,
+    cyberSourceData: cyberSourceData.data ? cyberSourceData.data.output : '',
+    cybersourecPreAuthFailure: data.billingInfo.cybersourecPreAuthFailure,
+    cybersourecPreAuthFailureErrorMessage: data.billingInfo.cybersourecPreAuthFailureErrorMessage,
     checkoutStates: data.checkoutStates,
     pastDueAmount: data.pastDueAmount,
     selectedShippingType: data.selectedShippingType,
@@ -153,6 +155,7 @@ function mapStateToProps(state) {
     ...getGiftCards(data.giftCardsLimit, giftCardForm, data.dueToday),
     paypalFlowCompleted: data.billingInfo.paypalEmailAddress !== null,
     masterpassFlowCompleted: !data.billingInfo.masterpassError && data.billingInfo.masterpassResponseInfo && data.billingInfo.masterpassResponseInfo.lastDigits && data.billingInfo.masterpassResponseInfo.cardType,
+    orderId: data.orderId,
   };
 }
 
