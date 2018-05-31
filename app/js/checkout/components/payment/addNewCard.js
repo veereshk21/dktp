@@ -52,195 +52,80 @@ const AddNewCardForm = (props) => {
   const { cqContent, billingInfo, cvvLength } = props;
   const cardNumberActive = props.newCardForm.active === 'card_number';
   const onCardFocus = () => { props.change('card_number', ''); };
-  const siteId = window.siteId;
-  const cyberSourceData = props.cyberSourceData ? props.cyberSourceData : '';
-  const onSubmit = (event) => {
-    event.preventDefault();
-    console.log();
-    let cardType = '';
-    const month = this.refs.card_month.value;
-    const year = this.refs.card_year.value;
-    const expiryDate = month + '-' + year;
-    const firstName = this.props.selectedShippingInfo.firstName;
-    const lastName = this.props.selectedShippingInfo.lastName;
-    this.refs.card_expiry.value = expiryDate;
-    this.refs.firstName.value = firstName;
-    this.refs.lastName.value = lastName;
-    const cardName = getCardType(this.refs.card_number.value);
-    if (cardName === 'visa') {
-      cardType = '001';
-    } else if (cardName === 'mastercard') {
-      cardType = '002';
-    } else if (cardName === 'amex') {
-      cardType = '003';
-    } else if (cardName === 'discover') {
-      cardType = '004';
-    }
-    this.refs.card_type.value = cardType;
-    if (this.props.valid) {
-      this.refs.form.submit();
-    } else {
-      alert('not submitted');
-    }
-  };
   return (
     <div className="margin12 onlySideMargin">
-     {!siteId && <div className="oneD"> 
-        <Row>
-          <Col xs={8} className="clearfix">
+      <Row>
+        <Col xs={8} className="clearfix">
 
-            <Field
-              className=""
-              component={renderTextField}
-              id="card_number"
-              name="card_number"
-              normalize={validation.allowOnlyNumbers}
-              label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_NUMBER}
-              aria-label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_NUMBER}
-              type={cardNumberActive ? 'text' : 'password'}
-              onFocus={onCardFocus}
-              maxLength="16"
-              pattern="[0-9]*"
-              required
-            />
-          </Col>
-          <Col xs={4} className="clearfix">
-            <img className="height72 margin18 onlyTopMargin" src={NortonSeal} alt="Norton Secured" />
-          </Col>
-        </Row>
-        <Row className="margin18 noSideMargin">
-          <Col xs={4} className="clearfix">
-            <MSelect
-              name="card_month"
-              id="card_month"
-              label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_MONTH}
-              borderStyle
-              required
-            >
-              <option disabled value="" />
-              {billingInfo.expirationMonths.map((month) => (<option key={`month-${month}`} value={month}>{month}</option>))}
-            </MSelect>
-          </Col>
-          <Col xs={4}>
-            <MSelect
-              name="card_year"
-              id="card_year"
-              label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_YEAR}
-              borderStyle
-              required
-            >
-              <option disabled value="" />
-              {billingInfo.expirationYears.map((year) => (<option key={`year-${year}`} value={year}>{year}</option>))}
-            </MSelect>
-          </Col>
-          <Col xs={4} className="clearfix">
-            <Field
-              className=""
-              component={renderTextField}
-              id="card_cvc"
-              name="card_cvc"
-              normalize={validation.allowOnlyNumbers}
-              maxLength={cvvLength}
-              label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_CVV}
-              type="password"
-              required
-              tooltip={
-                <div>
-                  <p className="margin12 onlyBottomMargin">{cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_CVV_TOOLTIP}</p>
-                  <img src={CVV} alt="CVV location" />
-                </div>
-              }
-            />
-          </Col>
-        </Row>
+          <Field
+            className=""
+            component={renderTextField}
+            id="card_number"
+            name="card_number"
+            normalize={validation.allowOnlyNumbers}
+            label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_NUMBER}
+            aria-label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_NUMBER}
+            type={cardNumberActive ? 'text' : 'password'}
+            onFocus={onCardFocus}
+            maxLength="16"
+            pattern="[0-9]*"
+            required
+          />
+        </Col>
+        <Col xs={4} className="clearfix">
+          <img className="height72 margin18 onlyTopMargin" src={NortonSeal} alt="Norton Secured" />
+        </Col>
+      </Row>
+      <Row className="margin18 noSideMargin">
+        <Col xs={4} className="clearfix">
+          <MSelect
+            name="card_month"
+            id="card_month"
+            label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_MONTH}
+            borderStyle
+            required
+          >
+            <option disabled value="" />
+            {billingInfo.expirationMonths.map((month) => (<option key={`month-${month}`} value={month}>{month}</option>))}
+          </MSelect>
+        </Col>
+        <Col xs={4}>
+          <MSelect
+            name="card_year"
+            id="card_year"
+            label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_YEAR}
+            borderStyle
+            required
+          >
+            <option disabled value="" />
+            {billingInfo.expirationYears.map((year) => (<option key={`year-${year}`} value={year}>{year}</option>))}
+          </MSelect>
+        </Col>
+        <Col xs={4} className="clearfix">
+          <Field
+            className=""
+            component={renderTextField}
+            id="card_cvc"
+            name="card_cvc"
+            normalize={validation.allowOnlyNumbers}
+            maxLength={cvvLength}
+            label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_CVV}
+            type="password"
+            required
+            tooltip={
+              <div>
+                <p className="margin12 onlyBottomMargin">{cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_CVV_TOOLTIP}</p>
+                <img src={CVV} alt="CVV location" />
+              </div>
+            }
+          />
+        </Col>
+      </Row>
       <div>
         <p>{cqContent.label.DT_OD_CHECKOUT_PAYMENT_CREDIT_CARD_ZIP_CODE_LABEL}</p>
         <p className="margin18">{billingInfo.billingAddress.zipcode}</p>
       </div>
-    </div>}
-    <div className="agentComm">
-        <Row>
-          <Col xs={8} className="clearfix">
 
-            <Field
-              className=""
-              component={renderTextField}
-              id="card_number"
-              name="card_number"
-              normalize={validation.allowOnlyNumbers}
-              label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_NUMBER}
-              aria-label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_NUMBER}
-              type={cardNumberActive ? 'text' : 'password'}
-              onFocus={onCardFocus}
-              maxLength="16"
-              pattern="[0-9]*"
-              required
-            />
-          </Col>
-          <Col xs={4} className="clearfix">
-            <img className="height72 margin18 onlyTopMargin" src={NortonSeal} alt="Norton Secured" />
-          </Col>
-        </Row>
-        <Row className="margin18 noSideMargin">
-          <Col xs={4} className="clearfix">
-            <MSelect
-              name="card_month"
-              id="card_month"
-              label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_MONTH}
-              borderStyle
-              required
-            >
-              <option disabled value="" />
-              {billingInfo.expirationMonths.map((month) => (<option key={`month-${month}`} value={month}>{month}</option>))}
-            </MSelect>
-          </Col>
-          <Col xs={4}>
-            <MSelect
-              name="card_year"
-              id="card_year"
-              label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_YEAR}
-              borderStyle
-              required
-            >
-              <option disabled value="" />
-              {billingInfo.expirationYears.map((year) => (<option key={`year-${year}`} value={year}>{year}</option>))}
-            </MSelect>
-          </Col>
-          <Col xs={4} className="clearfix">
-            <Field
-              className=""
-              component={renderTextField}
-              id="card_cvc"
-              name="card_cvc"
-              normalize={validation.allowOnlyNumbers}
-              maxLength={cvvLength}
-              label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_CVV}
-              type="password"
-              required
-              tooltip={
-                <div>
-                  <p className="margin12 onlyBottomMargin">{cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_CVV_TOOLTIP}</p>
-                  <img src={CVV} alt="CVV location" />
-                </div>
-              }
-            />
-          </Col>
-        </Row>
-      <div>
-        <p>{cqContent.label.DT_OD_CHECKOUT_PAYMENT_CREDIT_CARD_ZIP_CODE_LABEL}</p>
-        <p className="margin18">{billingInfo.billingAddress.zipcode}</p>
-      </div>
-      <div>
-      <form method="post" onSubmit={onSubmit} action={props.cyberSourceData ? props.cyberSourceData.httpPostUrl : ''} >
-
-      { cyberSourceData &&
-                  Object.keys(cyberSourceData.dataMap).map((key) =>
-                    <input type="hidden" name={key} value={cyberSourceData.dataMap[key]} />)
-                  }
-                  <input type="submit" value="submit "/>
-      </form>
-      </div>
-    </div>
     </div >
   );
 };
@@ -255,14 +140,12 @@ export default reduxForm({
   form: 'addNewCard',
   destroyOnUnmount: false,
   validate,
-})(connect((state, ownProps) => {
+})(connect((state) => {
   const forms = state.get('form').toJS();
   const cardNumber = selector(state, 'card_number');
-  const cyberSourceData = ownProps.cyberSourceData;
   const cvvLength = cardNumber && validation.getCardType(cardNumber) === 'amex' ? 4 : 3;
   return {
     cvvLength,
     newCardForm: forms.addNewCard ? forms.addNewCard : {},
-    cyberSourceData,
   };
 })(AddNewCardForm));

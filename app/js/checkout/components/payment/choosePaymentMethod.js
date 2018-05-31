@@ -4,6 +4,7 @@ import { reduxForm } from 'redux-form/immutable';
 import { Row, Col } from 'react-flexbox-grid';
 import * as validation from '../../../common/validation';
 import AddNewCardForm from './addNewCard';
+import AddNewCardAgentForm from './addNewCardAgent';
 import GiftCards from '../../containers/payment/giftCards';
 import ToolTip from '../../../common/ToolTip/index';
 import Button from '../../../common/Button/Button';
@@ -218,7 +219,11 @@ class ChoosePaymentMethod extends Component {
     } = this.props;
     let result = (valid && !submitting && forms.choosePaymentMethod && forms.choosePaymentMethod.values);
     let giftCardCheck = window.siteId ? null : showGiftCard;
+    const siteId = window.siteId;
     if (result) {
+      if (forms.choosePaymentMethod.values.paymentRadio === 'newcard' && siteId) {
+        result = (forms.newCardForm && !forms.newCardForm.syncErrors);
+      }
       if (forms.choosePaymentMethod.values.paymentRadio === 'newcard') {
         result = (forms.addNewCard && !forms.addNewCard.syncErrors) && (giftCardCheck ? (forms.giftCardsForm && !forms.giftCardsForm.syncErrors) : true);
       } else if (forms.choosePaymentMethod.values.paymentRadio === 'savedcard' && showCVV) {
@@ -244,6 +249,7 @@ class ChoosePaymentMethod extends Component {
     if (window.vzwDL && window.vzwDL.page) {
       window.vzwDL.page.testVersion = testVersion;
     }
+    const siteId = window.siteId;
     return (
       <div>
         <div className="margin12 onlyBottomMargin">
@@ -274,12 +280,21 @@ class ChoosePaymentMethod extends Component {
               <div className="margin12 onlySideMargin">
                 <PaymentMethods {...this.props} />
               </div>
-              {showAddCard &&
+              {showAddCard && !siteId &&
                 <AddNewCardForm
                   cqContent={cqContent}
                   billingInfo={billingInfo}
                   initialValues={newCardInitialValues}
+                />
+              }
+              {showAddCard && siteId &&
+                <AddNewCardAgentForm
+                  cqContent={cqContent}
+                  billingInfo={billingInfo}
+                  initialValues={newCardInitialValues}
                   cyberSourceData={this.props.cyberSourceData ? this.props.cyberSourceData : ''}
+                  postCyberSourceData={this.props.postCyberSourceData}
+                  isValidateEnabled ={isValidateEnabled}
                 />
               }
             </div>
@@ -319,7 +334,7 @@ class ChoosePaymentMethod extends Component {
           }
           </Col>
         </Row>
-
+        {showAddCard && !siteId &&
         <div className="width100 margin24 onlyTopMargin clearfix">
           {!paymentRequired &&
             <button
@@ -339,6 +354,7 @@ class ChoosePaymentMethod extends Component {
           </Button>
 
         </div>
+        }
       </div>
     );
   }
