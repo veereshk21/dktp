@@ -49,7 +49,7 @@ export default class SharedCartModal extends React.Component {
           <Col xs className="leftAlign pad20 noSidePad">
             <h3 className="bold fontSize_6" dangerouslySetInnerHTML={{ __html: item.brandName }} />
             <h3 className="bold fontSize_6" dangerouslySetInnerHTML={{ __html: item.displayName }} />
-            {/*<h3 className="bold fontSize_6 pad12 onlyTopPad">${item.price}</h3>*/}
+            {/* <h3 className="bold fontSize_6 pad12 onlyTopPad">${item.price}</h3> */}
           </Col>
           <Col xs className="textAlignCenter">
             <img src={item.deviceImageUrl} alt={item.displayName} />

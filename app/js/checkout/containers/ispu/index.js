@@ -4,8 +4,6 @@ import * as actionCreators from '../../actions';
 import InStorePickUp from '../../components/ispu/InStorePickUp';
 
 function mapStateToProps(state) {
-  console.log('========= ISPU Container =========');
-  console.log(state.toJSON());
   const orderDetails = state.get('orderDetails').toJS();
   const cqContent = state.get('cqContent').toJS();
   const form = state.get('form').toJS().ispu;

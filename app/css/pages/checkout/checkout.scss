@@ -19,6 +19,10 @@
   width: calc(100% - 30px);
 }
 
+.mSelectWrapper > label[for="card_month"]{
+  margin-top: -38px;
+}
+
 /** Shipping Information Text Updates styling **/
 .textUpdatesContainer {
   width: 200px;
@@ -167,6 +171,14 @@ select:focus,
 button.tooltip.white:focus {
   outline: #FFF dotted 1px !important;
   outline-offset: 1px;
+}
+
+/* Alignment fix due to flexbox limitations concerning even number division*/
+.billingAddress{
+  margin-left: 4.25%;
+}
+.billingAddressEdit{
+  margin-left: 12.5%;
 }
 
 

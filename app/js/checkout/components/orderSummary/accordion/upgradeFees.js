@@ -34,7 +34,7 @@ const UpgradeFeesAccordionItem = (props) => {
       </AccordionItemTitle>
       <AccordionItemBody>
         {devices.items && devices.items.map((device, index) => (
-          device.flow === 'EUP' &&
+          device.flow === 'EUP' && parseFloat(device.upgradeFee) > 0 &&
           <div key={`accordionUpgradeFee-${index}`}>
             <SummaryRow
               description={deviceName(device)}
@@ -42,6 +42,30 @@ const UpgradeFeesAccordionItem = (props) => {
               dueMonthly="-"
             />
           </div>
+        ))}
+
+        {devices.items && devices.items.map((device, index) => (
+          device.flow === 'EUP' &&
+          device.devicePromotionList && device.devicePromotionList.map((offer) => (
+            (offer.promoAmount !== null && parseFloat(offer.promoAmount) > 0 && offer.isUpgradeFeeWaivedOffer) &&
+              <div key={`accordionDiscount-${index}`}>
+                <SummaryRow
+                  description={
+                    <div>
+                      {deviceName(device)}
+                      <p>{cqContent.label.DT_OD_CHECKOUT_WAIVED_UPGRADE_FEE_TEXT}</p>
+                    </div>
+                  }
+                  dueToday={
+                    <div>
+                      <p>${device.upgradeFee}</p>
+                      <p className="textDecLineThrough">${device.originalUpgradeFee}</p>
+                    </div>
+                  }
+                  dueMonthly="-"
+                />
+              </div>
+          ))
         ))}
       </AccordionItemBody>
     </AccordionItem>

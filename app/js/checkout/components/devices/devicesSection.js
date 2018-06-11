@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import NotificationBar from '../../../common/NotificationBar';
-import { NOTIFICATIONS } from '../../constants';
+import { NOTIFICATIONS, EDIT_STATE } from '../../constants';
 import AsyncComponent from '../../../common/AsyncComponent';
 
 const DeviceInfo = AsyncComponent(() => import('./deviceInfo'));
@@ -27,9 +27,9 @@ class DevicesSection extends Component {
       this.props.invalidateAsyncFetch();
     }
     if (newProps.npanxxError && !this.state[`editDevice_${newProps.npanxxErrorIndex}`]) {
-      newProps.showErrorNotification(newProps.cqContent.error.DT_OD_NPANXX_NO_NUMBERS_ZIPCODE_TEXT, NOTIFICATIONS.DEVICE);
+      newProps.showErrorNotification(newProps.cqContent.error.DT_OD_NPANXX_NO_NUMBERS_ZIPCODE_TEXT);
       this.setEditState(newProps.npanxxErrorIndex, newProps.npanxxError);
-      window.scrollTo(0, (document.body.scrollTop + document.getElementById('devicesSection').getBoundingClientRect().top) - 40);
+      document.getElementById('devicesSection').scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'smooth' });
     }
   };
   setEditState = (index, state) => {
@@ -37,6 +37,7 @@ class DevicesSection extends Component {
       [`editDevice_${index}`]: state,
       editDeviceOpened: state,
     });
+    this.props.updateEditState(EDIT_STATE.DEVICE, state);
   }
   getInitialNewNumber = (device, npaNxxdetails) => {
     let number = device.npaNxxnumber;
@@ -105,5 +106,6 @@ DevicesSection.propTypes = {
   npanxxErrorIndex: PropTypes.number,
   npaNxxdetails: PropTypes.object,
   invalidateAsyncFetch: PropTypes.func,
+  updateEditState: PropTypes.func,
 };
 export default DevicesSection;

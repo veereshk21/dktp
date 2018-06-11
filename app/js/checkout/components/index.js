@@ -5,13 +5,13 @@ import Loader from '../../common/Loader/Loader';
 import ShippingSection from '../containers/shipping/shippingSection';
 import PaymentSection from './payment/paymentSection';
 import DevicesSection from '../containers/devices/devicesSection';
-import { NOTIFICATIONS } from '../constants';
 import AsyncComponent from '../../common/AsyncComponent';
 import ChatAndC2C from '../../common/ChatAndC2C';
 
 const Header = AsyncComponent(() => import('./header/header'));
 const OrderSummary = AsyncComponent(() => import('../containers/orderSummary/orderSummary'));
 const AgreementSection = AsyncComponent(() => import('../containers/agreement/agreementSection'));
+const EppAccessoryPolicyModal = AsyncComponent(() => import('./eppAccessoryPolicyModal'));
 
 
 class HomePage extends Component {
@@ -19,38 +19,39 @@ class HomePage extends Component {
     const paymentSectionElement = window.document.getElementById('paymentSection');
     const shippingSectionElement = window.document.getElementById('shippingSection');
     const devicesSectionElement = window.document.getElementById('devicesSection');
-
+    const scrollProps = { block: 'start', inline: 'nearest', behavior: 'smooth' };
     if (paymentSectionElement && this.props.paymentRequired) {
-      this.props.showErrorNotification(this.props.cqContent.error.DT_OD_CHECKOUT_PAYMENT_SECTION_ERROR, NOTIFICATIONS.PAYMENT);
-      window.scrollTo(0, paymentSectionElement.getBoundingClientRect().top - 25);
+      this.props.showErrorNotification(this.props.cqContent.error.DT_OD_CHECKOUT_PAYMENT_SECTION_ERROR);
+      paymentSectionElement.scrollIntoView(scrollProps);
     }
     // Masterpass Error Notification, ex: preauth errors
     if (paymentSectionElement && this.props.masterpassError) {
       this.props.showMasterpassError();
     }
-    if (shippingSectionElement && (this.props.shippingAddressRequired || this.props.shippingAddressChangeRequired)) {
-      this.props.showErrorNotification(this.props.cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_UPDATE_REQUIRED_ERROR, NOTIFICATIONS.SHIPPING);
-      window.scrollTo(0, shippingSectionElement.getBoundingClientRect().top - 25);
+    if (shippingSectionElement && (this.props.shippingAddressRequired || this.props.shippingAddressChangeRequired || this.props.checkoutStates.poBoxShippingAddress || this.props.checkoutStates.shippingAddressValidationError)) {
+      // this.props.showErrorNotification(this.props.cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_UPDATE_REQUIRED_ERROR);
+      shippingSectionElement.scrollIntoView(scrollProps);
     }
     if (devicesSectionElement && this.props.npanxxError) {
-      this.props.showErrorNotification(this.props.cqContent.error.DT_OD_NPANXX_NO_NUMBERS_ZIPCODE_TEXT, NOTIFICATIONS.DEVICE);
-      window.scrollTo(0, devicesSectionElement.getBoundingClientRect().top - 25);
+      this.props.showErrorNotification(this.props.cqContent.error.DT_OD_NPANXX_NO_NUMBERS_ZIPCODE_TEXT);
+      devicesSectionElement.scrollIntoView(scrollProps);
     }
     if (shippingSectionElement && this.props.flipIspuToShipping) {
-      this.props.showErrorNotification(this.props.cqContent.error.DT_OD_CHECKOUT_ISPU_NOTAVAILABLE_ORDER_HEAD_ERROR, NOTIFICATIONS.SHIPPING);
-      window.scrollTo(0, shippingSectionElement.getBoundingClientRect().top - 25);
+      this.props.showErrorNotification(this.props.cqContent.error.DT_OD_CHECKOUT_ISPU_NOTAVAILABLE_ORDER_HEAD_ERROR);
+      shippingSectionElement.scrollIntoView(scrollProps);
     }
   }
 
   render() {
     const {
-      isFetching, cqContent, standaloneAccessories, cartDetailURL,
+      isFetching, cqContent, standaloneAccessories, cartDetailURL, eppAccessoryPolicyModal,
     } = this.props;
 
     return (
       <div>
         {isFetching === true && <Loader />}
         {/* <div className="border_grayThree height60 width100 onlyBottomBorder" /> */}
+        {eppAccessoryPolicyModal && <EppAccessoryPolicyModal cqContent={cqContent} />}
         <div className="border_e6 onlyBottomBorder pad24 noSidePad">
           <Row middle="xs">
             <Col xs={9}>
@@ -107,6 +108,8 @@ HomePage.propTypes = {
   masterpassError: PropTypes.bool,
   showMasterpassError: PropTypes.func,
   flipIspuToShipping: PropTypes.bool,
+  checkoutStates: PropTypes.object,
+  eppAccessoryPolicyModal: PropTypes.bool,
 };
 
 export default HomePage;

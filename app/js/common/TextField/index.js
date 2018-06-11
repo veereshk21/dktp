@@ -5,6 +5,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import baseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import ToolTip from '../ToolTip/index';
+import './../../../css/modules/textField.scss';
 
 
 const styles = {
@@ -61,20 +62,20 @@ export const renderTextField = ({
 }) => {
   const errorState = (meta.touched || meta.autofill || (meta.invalid && meta.pristine && input.value)) && meta.error;
   const labelText = <span>{label}{required && <span aria-hidden="true">*</span>}</span>;
-
+  const labelClass = tooltip ? 'displayInlineBlock' : 'displayBlock';
   return (
     <MuiThemeProvider muiTheme={getMuiTheme(baseTheme)}>
       <div className="positionRelative clearfix textField" style={errorState ? { marginBottom: 12 } : {}}>
         {label &&
           <label
             htmlFor={rest.id}
-            className={`${tooltip ? 'displayInlineBlock' : 'displayBlock'} margin6 noSideMargin`}
+            className={`${labelClass} margin6 noSideMargin bold`}
           >
             {labelText}
           </label>
         }
         {tooltip &&
-          <div className="displayInlineBlock margin6 noSideMargin">
+          <div className="displayInlineBlock margin6 noSideMargin verticalBottom">
             <ToolTip
               className="margin3 onlyLeftMargin displayInlineBlock"
               ariaLabel={`${label} tooltip`}

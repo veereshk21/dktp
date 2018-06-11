@@ -5,19 +5,9 @@
     color: #fff;
     line-height: 60px;
 }
-body {
-  overflow-x: hidden;
-}
+
 .confirmation_print {
     font-family: NeueHaasGroteskDisplay;
-}
-
-.gridBorder{
-    border: 1px solid grey;
-}
-
-.gridColorBG{
-    background-color: #f5f5f5;
 }
 
 .color .color-box {
@@ -41,4 +31,8 @@ body {
     font-family: 'vzwIcons';
     content: "\E608";
     top:0;
+}
+
+.minHeigth120{
+    min-height: 120px,
 }

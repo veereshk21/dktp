@@ -11,27 +11,29 @@ function mapStateToProps(state, props) {
   const asyncCallStatus = state.get('asyncCallStatus');
   const { portInDetails } = props.device;
 
+  const initialValues = portInDetails ? {
+    portInAddress: portInDetails.address1,
+    portInAddress2: portInDetails.address2,
+    portInZipCode: portInDetails.zipcode,
+    portInCity: portInDetails.city,
+    portInState: portInDetails.state,
+    portInExistingNumber: portInDetails.existingNumber,
+    portInExistingAccount: portInDetails.existingAccountNumber,
+    portInPin: portInDetails.accountPin,
+    portInContactNumber: portInDetails.altContactNumber,
+    portInName: portInDetails.accountHolderName,
+  } : {};
+
   if (!data.devices) {
     window.location.href = '/#genericError';
     return {};
   }
   return {
     cqContent,
-    ...asyncCallStatus,
+    asyncCallStatus,
     devices: data.deviceConfigInfo.devices,
     states: data.states,
-    initialValues: portInDetails ? {
-      portInAddress: portInDetails.address1,
-      portInAddress2: portInDetails.address2,
-      portInZipCode: portInDetails.zipcode,
-      portInCity: portInDetails.city,
-      portInState: portInDetails.state,
-      portInExistingNumber: portInDetails.existingNumber,
-      portInExistingAccount: portInDetails.existingAccountNumber,
-      portInPin: portInDetails.accountPin,
-      portInContactNumber: portInDetails.altContactNumber,
-      portInName: portInDetails.accountHolderName,
-    } : {},
+    initialValues,
   };
 }
 

@@ -24,14 +24,14 @@ const DeviceInfo = (props) => {
       <Col xs={9} lg={10} className="noPad">
         <Row>
           <Col xs={6}>
-            <p className="bold fontSize_5">
+            <h3>
               {index + 1}. <span dangerouslySetInnerHTML={{ __html: device.manufactureName }} /> <span dangerouslySetInnerHTML={{ __html: device.deviceName }} />
-            </p>
+            </h3>
           </Col>
           <Col xs={6}>
-            <p className="bold fontSize_5 displayInlineBlock">
+            <h3 className="displayInlineBlock">
               {cqContent.label.DT_OD_CHECKOUT_DEVICES_HEADER_SERVICE_ADDRESS}
-            </p>
+            </h3>
             <ToolTip
               className="margin3 onlyLeftMargin displayInlineBlock"
               ariaLabel="Billing address information tooltip"
@@ -51,7 +51,11 @@ const DeviceInfo = (props) => {
                     <EditButton onClick={props.onEdit} />
                   }
                 </div>
-                <p className="fontSize_2">Sharing: {device.numberSharedMtn && normalizePhoneNumber(device.numberSharedMtn)}</p>
+                {device.numberSharedMtn ?
+                  <p className="fontSize_2">Sharing: {device.numberSharedMtn && normalizePhoneNumber(device.numberSharedMtn)}</p>
+                  :
+                  <p dangerouslySetInnerHTML={{ __html: device.numberSharedDeviceName ? device.numberSharedDeviceName : '' }} />
+                }
               </div>
               :
               <div>

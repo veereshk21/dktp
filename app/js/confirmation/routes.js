@@ -7,7 +7,7 @@ import Loader from './../common/Loader/Loader';
 
 export default function createRoutes(store) {
   // Create reusable async injectors using getAsyncInjectors factory
-  const { injectReducer } = getAsyncInjectors(store); // eslint-disable-line no-unused-vars
+  const { injectReducer } = getAsyncInjectors(store);
 
   return [
     {

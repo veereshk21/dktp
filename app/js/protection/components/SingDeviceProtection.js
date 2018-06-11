@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Col, Row } from 'react-flexbox-grid';
+import RadioButton from '../../common/RadioButton/index';
 
 const SingleDeviceProtection = ({ fewPlans, cqContent, protectionTypes, deviceDetails, showAllPlans, selectedOption, onShowAllProtection, onProtectionChange }) => {
   const deviceName = deviceDetails ? (deviceDetails.brandName + ' ' + deviceDetails.displayName + ', ' + deviceDetails.capacity + ' in ' + deviceDetails.color) : '';
@@ -8,8 +9,8 @@ const SingleDeviceProtection = ({ fewPlans, cqContent, protectionTypes, deviceDe
   const protectionArr = showAllPlans === true ? protectionTypes.single : fewPlans;
   return (
     <div>
-      <div className="pad18 noSidePad">
-        <h2 className="fontSize_7">
+      <div className="pad18">
+        <h2 className="fontSize_6">
           {cqContent.label.DT_OD_PROTECTION_TMP_SD_TITLE}
         </h2>
         <p className="margin12 noSideMargin">{cqContent.label.DT_OD_PROTECTION_TMP_SD_SUB_TITLE}</p>
@@ -20,44 +21,39 @@ const SingleDeviceProtection = ({ fewPlans, cqContent, protectionTypes, deviceDe
           <img className="width50 margin18 noSideMargin" src={deviceUrl} alt={deviceName} />
         </Col>
         <Col xs={8}>
-          {protectionArr.map((protection) => { // eslint-disable-line
+          {protectionArr.map((protection,index) => { // eslint-disable-line
             return (
-              <Row key={protection.index} className="pad18 noSidePad">
+              <Row key={index} className="pad18 noSidePad">
                 <Col xs={10}>
-                  <input
-                    tabIndex={protection.index}
-                    id={'protectionRadio_' + protection.index}
-                    className="radioCustom"
-                    checked={
-                      protection.sfoSkuId === selectedOption
-                    }
-                    type="radio"
+                  <RadioButton
                     name="protectionOption"
+                    id={'protectionRadio_' + (index + 1)}
                     value={protection.sfoSkuId}
-                    role="radiogroup"
+                    containerClassName=" "
+                    labelClassName="verticalTop displayInlineBlock pad12 onlyLeftPad width90"
+                    checked={protection.sfoSkuId === selectedOption}
                     onChange={() => {
                       onProtectionChange(protection);
                     }}
-                  />
-                  <label htmlFor={'protectionRadio_' + protection.index} className="radioCustom_label m-priceLabel width100">
-                    <div className="priceLabel floatNone displayInlineBlock margin12 onlyLeftMargin verticalAlignMiddle">
-                      <p tabIndex={protection.index} className="bold fontSize_5">{protection.displayName}</p>
-                      <p className="pad6 onlyTopPad" tabIndex={protection.index} dangerouslySetInnerHTML={{ __html: `${protection.introText}` }} />
+                  >
+                    <div className="fontSize_4">
+                      <p tabIndex={index} className="bold fontSize_5">{protection.displayName}</p>
+                      <p className="pad6 onlyTopPad" tabIndex={index} dangerouslySetInnerHTML={{ __html: `${protection.introText}` }} />
                     </div>
-                  </label>
+                  </RadioButton>
                 </Col>
                 <Col xs={2}>
-                  <p tabIndex={protection.index} className="bold textRight">
+                  <p tabIndex={index} className="bold">
                     {protection.hasEcpdDiscount && <span><span className="textDecLineThrough normal">${protection.wasPrice}</span>&nbsp;&nbsp;</span>}${`${protection.price} ${protection.priceTerm}`}
                   </p>
                 </Col>
               </Row>
             );
           })}
-          {protectionTypes.single.length > 2 && <a className="margin18 onlyTopMargin displayBlock fontSize_5 color_black textDecUnderline bold" onClick={onShowAllProtection} href="">
+          {protectionTypes.single.length > 2 && <a className="pad36 onlyLeftPad margin18 onlyTopMargin displayBlock fontSize_5 color_black textDecUnderline bold" onClick={onShowAllProtection} href="">
             {(showAllPlans === false) ? cqContent.label.DT_OD_DEVICE_PROTECTION_SEE_ALL_PLANS_BTN_TXT : cqContent.label.DT_OD_DEVICE_PROTECTION_SEE_LESS_PLANS_BTN_TXT}
           </a>}
-          <div className="pad24 noSidePad" dangerouslySetInnerHTML={{ __html: cqContent.html.DT_OD_PROTECTION_TMP_REFRESH_TEXT }} />
+          <div className="margin36 onlyLeftMargin pad24 noSidePad" dangerouslySetInnerHTML={{ __html: cqContent.html.DT_OD_PROTECTION_TMP_REFRESH_TEXT }} />
         </Col>
       </Row>
     </div>

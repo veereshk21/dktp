@@ -7,7 +7,6 @@ import RadioButton from '../../common/RadioButton/index';
 import { hashHistory } from '../../store';
 import * as validation from '../../common/validation';
 import { renderTextField } from '../../common/TextField/';
-import ToolTip from '../../common/ToolTip/index';
 import NotificationBar from '../../common/NotificationBar';
 import { NOTIFICATIONS } from '../constants';
 
@@ -113,7 +112,7 @@ class SecurePin extends Component {
                     {cqContent.label.DT_OD_CHECKOUT_SECURE_PIN_TEXT_ME}
                   </button>
                   <button
-                    className="button secondary displayInlineBlock margin12 onlyLeftMargin"
+                    className="button secondary displayInlineBlock margin10 onlyLeftMargin"
                     onClick={closeModal}
                   >
                     {cqContent.label.DT_OD_CHECKOUT_SECURE_PIN_CANCEL}
@@ -128,12 +127,6 @@ class SecurePin extends Component {
                 <span>
                   {cqContent.label.DT_OD_CHECKOUT_SECURE_PIN_AUTHENTICATE_SUBTITLE}
                 </span>
-                <ToolTip
-                  className="margin3 onlyLeftMargin displayInlineBlock"
-                  ariaLabel="Enter online authentication code information tooltip"
-                  text={cqContent.label.DT_OD_CHECKOUT_SECURE_PIN_AUTHENTICATE_SUBTITLE_TOOLTIP}
-                  noRenderHTML
-                />
               </div>
 
               <div style={{ width: 300 }}>
@@ -176,14 +169,17 @@ class SecurePin extends Component {
                 </button>
               </div>
               <div>
-                <span className="margin24 onlyBottomMargin">{cqContent.label.DT_OD_CHECKOUT_SECURE_PIN_AUTHENTICATE_FOOTER}</span>
-                <ToolTip
-                  className="margin3 onlyLeftMargin displayInlineBlock"
-                  ariaLabel="Didn't receive authentication code information tooltip"
-                  text={cqContent.label.DT_OD_CHECKOUT_SECURE_PIN_AUTHENTICATE_FOOTER_TOOLTIP}
-                  noRenderHTML
+                <span
+                  className="margin24 onlyBottomMargin"
+                  dangerouslySetInnerHTML={{ __html: cqContent.label.DT_OD_CHECKOUT_SECURE_PIN_AUTHENTICATE_FOOTER }}
                 />
               </div>
+              <button
+                className="fontSize_3 link background_transparent borderSize_0 noPad margin12 noSideMargin"
+                onClick={() => this.setState({ sentSMS: false })}
+              >
+                {cqContent.label.DT_OD_CHECKOUT_SECURE_PIN_AUTHENTICATE_RESEND_CODE}
+              </button>
             </div>
           }
         </div>

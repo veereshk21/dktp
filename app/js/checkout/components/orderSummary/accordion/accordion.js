@@ -118,9 +118,11 @@ const OrderAccordion = (props) => {
           tradeInDetails={tradeInDetails}
         />
       }
-      <p className="legal margin24 noSideMargin">
-        {cqContent.label.DT_OD_CHECKOUT_SUMMARY_DUE_MONTHLY_DISCLAIMER}
-      </p>
+      {!standaloneAccessories &&
+        <p className="legal margin24 noSideMargin">
+          {cqContent.label.DT_OD_CHECKOUT_SUMMARY_DUE_MONTHLY_DISCLAIMER}
+        </p>
+      }
     </div>
   );
 };

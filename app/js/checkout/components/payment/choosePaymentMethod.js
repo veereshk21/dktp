@@ -4,12 +4,13 @@ import { reduxForm } from 'redux-form/immutable';
 import { Row, Col } from 'react-flexbox-grid';
 import * as validation from '../../../common/validation';
 import AddNewCardForm from './addNewCard';
-import AddNewCardAgentForm from './addNewCardAgent';
 import GiftCards from '../../containers/payment/giftCards';
 import ToolTip from '../../../common/ToolTip/index';
 import Button from '../../../common/Button/Button';
-import { EDIT_STATE, NOTIFICATIONS } from '../../constants';
+import { EDIT_STATE } from '../../constants';
 import PaymentMethods from './paymentMethods';
+
+const scrollProps = { block: 'start', inline: 'nearest', behavior: 'smooth' };
 
 const validate = (values, props) => {
   const errors = {};
@@ -33,7 +34,6 @@ class ChoosePaymentMethod extends Component {
   }
 
   componentWillMount() {
-    this.props.fetchCyberSourceData(this.props.orderId);
     const {
       applePayOption, appleMerchantIdentifier, applePayEnabled, showApplePay,
     } = this.props;
@@ -106,13 +106,15 @@ class ChoosePaymentMethod extends Component {
                 case 'FAILURE': // Handle authentication failed or error encounter scenario
                   // eslint-disable-next-line no-console
                   console.log('FAILURE');
-                  dispatchErrorNotification(cqContent.error.DT_OD_CHECKOUT_PAYMENT_3D_SECURE_FAILURE, NOTIFICATIONS.PAYMENT);
+                  dispatchErrorNotification(cqContent.error.DT_OD_CHECKOUT_PAYMENT_3D_SECURE_FAILURE);
+                  window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
                   break;
 
                 case 'ERROR': // Handle service level error
                   // eslint-disable-next-line no-console
                   console.log('ERROR');
-                  dispatchErrorNotification(cqContent.error.DT_OD_CHECKOUT_PAYMENT_3D_SECURE_FAILURE, NOTIFICATIONS.PAYMENT);
+                  dispatchErrorNotification(cqContent.error.DT_OD_CHECKOUT_PAYMENT_3D_SECURE_FAILURE);
+                  window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
                   break;
 
                 default:
@@ -204,9 +206,11 @@ class ChoosePaymentMethod extends Component {
       // BTA
       choosePaymentMethod({ paymentType: selectedRadioButton }, pastDuePaymentRequired);
     } else if (selectedRadioButton === 'paypal' && !paypalFlowCompleted) {
-      dispatchErrorNotification(cqContent.error.DT_OD_CHECKOUT_PAYMENT_PAYPAL_VALIDATE_INCOMPLETE_ERROR, NOTIFICATIONS.PAYMENT);
+      dispatchErrorNotification(cqContent.error.DT_OD_CHECKOUT_PAYMENT_PAYPAL_VALIDATE_INCOMPLETE_ERROR);
+      window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
     } else if (selectedRadioButton === 'masterpass' && !masterpassFlowCompleted) {
-      dispatchErrorNotification(cqContent.error.DT_OD_CHECKOUT_PAYMENT_MASTERPASS_VALIDATE_INCOMPLETE_ERROR, NOTIFICATIONS.PAYMENT);
+      dispatchErrorNotification(cqContent.error.DT_OD_CHECKOUT_PAYMENT_MASTERPASS_VALIDATE_INCOMPLETE_ERROR);
+      window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
     } else {
       // No Changes
       this.props.updateEditState(EDIT_STATE.PAYMENT, false);
@@ -218,16 +222,11 @@ class ChoosePaymentMethod extends Component {
       valid, submitting, forms, showCVV, showGiftCard, selectedRadioButton, paypalFlowCompleted, masterpassFlowCompleted,
     } = this.props;
     let result = (valid && !submitting && forms.choosePaymentMethod && forms.choosePaymentMethod.values);
-    let giftCardCheck = window.siteId ? null : showGiftCard;
-    const siteId = window.siteId;
     if (result) {
-      if (forms.choosePaymentMethod.values.paymentRadio === 'newcard' && siteId) {
-        result = (forms.newCardForm && !forms.newCardForm.syncErrors);
-      }
       if (forms.choosePaymentMethod.values.paymentRadio === 'newcard') {
-        result = (forms.addNewCard && !forms.addNewCard.syncErrors) && (giftCardCheck ? (forms.giftCardsForm && !forms.giftCardsForm.syncErrors) : true);
+        result = (forms.addNewCard && !forms.addNewCard.syncErrors) && (showGiftCard ? (forms.giftCardsForm && !forms.giftCardsForm.syncErrors) : true);
       } else if (forms.choosePaymentMethod.values.paymentRadio === 'savedcard' && showCVV) {
-        result = forms.choosePaymentMethod.values.card_cvc && !forms.choosePaymentMethod.syncErrors && (giftCardCheck ? (forms.giftCardsForm && !forms.giftCardsForm.syncErrors) : true);
+        result = forms.choosePaymentMethod.values.card_cvc && !forms.choosePaymentMethod.syncErrors && (showGiftCard ? (forms.giftCardsForm && !forms.giftCardsForm.syncErrors) : true);
       } else if ((selectedRadioButton === 'paypal' && !paypalFlowCompleted) || (selectedRadioButton === 'masterpass' && !masterpassFlowCompleted)) {
         result = false;
       }
@@ -240,16 +239,10 @@ class ChoosePaymentMethod extends Component {
     const {
       cqContent, testVersion, showAddCard, paymentRequired, billingInfo, showGiftCard,
     } = this.props;
-    const { billingAddress, creditCardInfo } = this.props.billingInfo;
-    const newCardInitialValues = {
-      card_month: creditCardInfo.creditCardExpMonth,
-      card_year: creditCardInfo.creditCardExpYear,
-      card_zip: billingInfo.billingAddress.zipcode,
-    };
+    const { billingAddress } = this.props.billingInfo;
     if (window.vzwDL && window.vzwDL.page) {
       window.vzwDL.page.testVersion = testVersion;
     }
-    const siteId = window.siteId;
     return (
       <div>
         <div className="margin12 onlyBottomMargin">
@@ -266,9 +259,9 @@ class ChoosePaymentMethod extends Component {
         </div>
 
         <Row className="border_grayThree onlyBottomBorder pad12 onlyBottomPad row">
-          <Col xs={8} style={{ paddingRight: 12 }}>
+          <Col xs={7} >
             <div className="">
-              <div className="margin12 noSideMargin">
+              <div className="margin12 onlyTopMargin">
                 <h3 className="displayInlineBlock">{cqContent.label.DT_OD_CHECKOUT_PAYMENT_INFORMATION_SECTION_TITLE}</h3>
                 <ToolTip
                   className="margin3 onlyLeftMargin displayInlineBlock"
@@ -280,29 +273,21 @@ class ChoosePaymentMethod extends Component {
               <div className="margin12 onlySideMargin">
                 <PaymentMethods {...this.props} />
               </div>
-              {showAddCard && !siteId &&
+              {showAddCard &&
                 <AddNewCardForm
                   cqContent={cqContent}
                   billingInfo={billingInfo}
-                  initialValues={newCardInitialValues}
-                />
-              }
-              {showAddCard && siteId &&
-                <AddNewCardAgentForm
-                  cqContent={cqContent}
-                  billingInfo={billingInfo}
-                  initialValues={newCardInitialValues}
-                  cyberSourceData={this.props.cyberSourceData ? this.props.cyberSourceData : ''}
-                  postCyberSourceData={this.props.postCyberSourceData}
-                  isValidateEnabled ={isValidateEnabled}
+                  initialValues={{
+                    card_zip: billingInfo.billingAddress.zipcode,
+                  }}
                 />
               }
             </div>
           </Col>
-          <Col xs={4} style={{ paddingLeft: 0 }}>
-            <div className="border_grayThree onlyLeftBorder pad12 onlyLeftPad" style={{ minHeight: 200 }}>
+          <Col xs={4} lgOffset={0} className="billingAddress">
+            <div className="" style={{ minHeight: 200 }}>
               <div className="margin12 noSideMargin">
-                <h3 className="bold fontSize_5 displayInlineBlock">
+                <h3 className="displayInlineBlock">
                   {cqContent.label.DT_OD_CHECKOUT_PAYMENT_BILLING_ADDRESS_SECTION_TITLE}
                 </h3>
                 <ToolTip
@@ -312,38 +297,31 @@ class ChoosePaymentMethod extends Component {
                   noRenderHTML
                 />
               </div>
-
-              {billingAddress.businessName &&
-                <p>{billingAddress.businessName}</p>
-              }
-              {(billingAddress.firstName || billingAddress.lastName) &&
-                <p> {billingAddress.firstName} {billingAddress.lastName}</p>
-              }
-              <p>{billingAddress.address1}</p>
-              {billingAddress.address2 &&
-                <p>{billingAddress.address2}</p>
-              }
-              <p>{billingAddress.city}, {billingAddress.state}, {billingAddress.zipcode}</p>
-              <p>{validation.normalizePhoneNumber(billingAddress.phoneNumber)}</p>
-              <p> {billingAddress.email}</p>
+              <div className="margin24 onlyTopMargin">
+                {billingAddress.businessName &&
+                  <p>{billingAddress.businessName}</p>
+                }
+                {(billingAddress.firstName || billingAddress.lastName) &&
+                  <p> {billingAddress.firstName} {billingAddress.lastName}</p>
+                }
+                <p>{billingAddress.address1}</p>
+                {billingAddress.address2 &&
+                  <p>{billingAddress.address2}</p>
+                }
+                <p>{billingAddress.city}, {billingAddress.state}, {billingAddress.zipcode}</p>
+                <p>{validation.normalizePhoneNumber(billingAddress.phoneNumber)}</p>
+                <p> {billingAddress.email}</p>
+              </div>
             </div>
           </Col>
           <Col xs={12}>
-          { showGiftCard && !siteId &&
-            <GiftCards />
-          }
+            {showGiftCard &&
+              <GiftCards />
+            }
           </Col>
         </Row>
-        {showAddCard && !siteId &&
+
         <div className="width100 margin24 onlyTopMargin clearfix">
-          {!paymentRequired &&
-            <button
-              className="fontSize_3 link background_transparent displayInlineBlock margin15 borderSize_0"
-              onClick={this.onCancel}
-            >
-              Cancel
-            </button>
-          }
           <Button
             className="primary button large"
             type="submit"
@@ -353,8 +331,15 @@ class ChoosePaymentMethod extends Component {
             Validate
           </Button>
 
+          {!paymentRequired &&
+            <Button
+              className="secondary button large margin10 onlyLeftMargin"
+              onClick={this.onCancel}
+            >
+              {cqContent.label.DT_OD_CHECKOUT_PAYMENT_CANCEL}
+            </Button>
+          }
         </div>
-        }
       </div>
     );
   }
@@ -392,7 +377,6 @@ ChoosePaymentMethod.propTypes = {
   giftCardList: PropTypes.array,
   paypalFlowCompleted: PropTypes.bool,
   masterpassFlowCompleted: PropTypes.bool,
-  cyberSourceData: PropTypes.object,
 };
 
 // export default ChoosePaymentMethod;

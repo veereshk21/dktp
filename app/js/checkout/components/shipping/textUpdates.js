@@ -48,7 +48,7 @@ const TextUpdates = (props) => {
               labelClass="displayInlineBlock verticalCenter leftAlign pad6 checkboxLabel"
             >
               <div>
-                <span className="h3 fontSize_5">
+                <span className="h3">
                   {cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_TEXT_UPDATES}
                 </span>
                 <ToolTip
@@ -59,17 +59,10 @@ const TextUpdates = (props) => {
                 />
               </div>
             </Checkbox>
-            <div className="margin6 noSideMargin">
-              <label
-                htmlFor="optInMtn"
-                className="fontSize_3 color_gray_six margin12 onlyBottomMargin"
-              >
-                {cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_TEXT_UPDATES_LABEL}
-              </label>
-
+            <div className="margin36 onlyLeftMargin pad6 noSidePad">
               <MSelect
                 name="optInMtn"
-                aria-label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_TEXT_UPDATES}
+                aria-label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_TEXT_UPDATES_LABEL}
                 id="optInMtn"
                 borderStyle
               >

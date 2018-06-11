@@ -50,7 +50,8 @@
     background: #D8DADA;
 }
 .checkbox:focus~label:before{
-    outline:#000000;
+    outline: #000 dotted 1px !important;
+    outline-offset: 1px;
 }
 
 .checkbox input:focus+label::before, .checkbox input:hover+label::before, .checkbox label.m-mulitpleInputs:focus::before, .checkbox label.m-multipleInputs:hover::before  {

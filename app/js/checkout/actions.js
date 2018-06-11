@@ -22,9 +22,10 @@ import {
   UPDATE_EDIT_STATE,
   EDIT_STATE,
   NOTIFICATIONS,
-  CYBER_SOURCE_DATA,
+  RESET_ZIPCODE_INFO,
 } from './constants';
 
+const scrollProps = { block: 'start', inline: 'nearest', behavior: 'smooth' };
 
 /* *
  * Action sets a loader to be shown on page
@@ -99,25 +100,17 @@ export const updateShippingAddress = (shippingAddress, OD_CHECKOUT_ADDRESS_UPDAT
     if (response.data.statusCode === API_SUCCESS_CODE) {
       const orderDetails = response.data.output;
       if (orderDetails.shippingInfo.shippingInfoUpdated === true) {
-        if (sessionStorage.getItem('applePayEnabled') === 'true') {
-          if (orderDetails.applePayEnabled === undefined || orderDetails.applePayEnabled === false) {
-            /* eslint-disable no-param-reassign */
-            // WE REALLY NEED TO FIX THIS!!!
-            orderDetails.applePayEnabled = true;
-            orderDetails.appleMerchantIdentifier = sessionStorage.getItem('appleMerchantIdentifier');
-            orderDetails.applePaymentRequest = JSON.parse(sessionStorage.getItem('applePaymentRequest'));
-            /* eslint-enable */
-          }
-        }
         dispatch(resetState(response.data.output));// update the page with fresh data
         dispatch(hideNotification());
-        dispatch(updateEditState(EDIT_STATE.SHIPPING, false));
+        dispatch(updateEditState(EDIT_STATE.SHIPPING, orderDetails.checkoutStates.contactInfoRequired));
         dispatch(updateEditState(EDIT_STATE.PAYMENT, !!(orderDetails.checkoutStates && orderDetails.checkoutStates.paymentRequired)));
       } else {
-        dispatch(showErrorNotification(OD_CHECKOUT_ADDRESS_UPDATE_FAILURE_TEXT, NOTIFICATIONS.SHIPPING));
+        dispatch(showErrorNotification(OD_CHECKOUT_ADDRESS_UPDATE_FAILURE_TEXT));
+        window.document.getElementById('shippingSection').scrollIntoView(scrollProps);
       }
     } else {
-      dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.SHIPPING));
+      dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
+      window.document.getElementById('shippingSection').scrollIntoView(scrollProps);
     }
     dispatch(asyncFetchSucess());// action to hide loader
   }).catch((error) => {
@@ -147,22 +140,13 @@ export const updateShippingInfo = (shippingInfo) => (dispatch, getState) => {
   updateShippingInfoAPI(shippingInfo, url).then((response) => {
     if (response.data.statusCode === API_SUCCESS_CODE) {
       const orderDetails = response.data.output;
-      if (sessionStorage.getItem('applePayEnabled') === 'true') {
-        if (orderDetails.applePayEnabled === undefined || orderDetails.applePayEnabled === false) {
-          /* eslint-disable no-param-reassign */
-          // WE REALLY NEED TO FIX THIS!!!
-          orderDetails.applePayEnabled = true;
-          orderDetails.appleMerchantIdentifier = sessionStorage.getItem('appleMerchantIdentifier');
-          orderDetails.applePaymentRequest = JSON.parse(sessionStorage.getItem('applePaymentRequest'));
-          /* eslint-enable */
-        }
-      }
       dispatch(resetState(orderDetails));// update the page with fresh data
-      dispatch(updateEditState(EDIT_STATE.SHIPPING, false));
+      dispatch(updateEditState(EDIT_STATE.SHIPPING, !!(orderDetails.checkoutStates && (orderDetails.checkoutStates.contactInfoRequired))));
       dispatch(updateEditState(EDIT_STATE.PAYMENT, !!(orderDetails.checkoutStates && orderDetails.checkoutStates.paymentRequired)));
       dispatch(hideNotification());
     } else {
-      dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.SHIPPING));
+      dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
+      window.document.getElementById('shippingSection').scrollIntoView(scrollProps);
     }
     dispatch(asyncFetchSucess());// action to hide loader
   }).catch((error) => {
@@ -287,9 +271,9 @@ export const handleCardinalResponseUrlApi = (data, jwt, url) => request({
   url,
   data: { cardinalJWTToken: jwt },
 });
-export const dispatchErrorNotification = (errMsg, section) => (dispatch) => {
+export const dispatchErrorNotification = (errMsg) => (dispatch) => {
   dispatch(asyncFetchSucess());
-  dispatch(showErrorNotification(errMsg, section));
+  dispatch(showErrorNotification(errMsg));
 };
 
 export const handle3dPaymentValidated = (data, jwt) => (dispatch, getState) => {
@@ -303,7 +287,8 @@ export const handle3dPaymentValidated = (data, jwt) => (dispatch, getState) => {
       dispatch(updateEditState(EDIT_STATE.PAYMENT, false));
       dispatch(hideNotification());
     } else {
-      dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.PAYMENT));
+      dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
+      window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
     }
   }).catch((error) => {
     // eslint-disable-next-line no-console
@@ -345,14 +330,16 @@ export const addNewCard = (cardInfo, isPastDue, pieEnabled, giftCards, cardinalI
         window.location = response.data.output.goToSuccessURL;
       } else {
         dispatch(asyncFetchSucess());
-        dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.PAYMENT));
+        dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
+        window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
         dispatch(reset('addNewCard'));
         // addPaymentMethodForm.setState({ masked_card_number: '', card_number: '', card_error: '' });
         // TO DO: CLEAR STATE
       }
     } else {
       dispatch(asyncFetchSucess());
-      dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.PAYMENT));
+      dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
+      window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
       dispatch(reset('addNewCard'));
       // addPaymentMethodForm.setState({ masked_card_number: '', card_number: '', card_error: '' });
       // TO DO: CLEAR STATE
@@ -452,13 +439,13 @@ export const choosePaymentMethod = (paymentInfo, isPastDue, pieEnabled, giftCard
       if ((response.data.output !== null && typeof response.data.output.goToSuccessURL !== 'undefined')) {
         window.location = response.data.output.goToSuccessURL;
       } else {
-        dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.PAYMENT));
+        dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
         /* setTimeout(()=>{
             dispatch(hideNotification());
           }, 5000); */
       }
     } else {
-      dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.PAYMENT));
+      dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
     }
   }).catch((error) => {
     // eslint-disable-next-line no-console
@@ -484,7 +471,8 @@ export const showApplePayErrorInfo = (errorData) => (dispatch) => {
   if (errorData && errorData.type === 'info') {
     dispatch(showInfoNotification(errorData.message));
   } else if (errorData && errorData.type === 'error') {
-    dispatch(showErrorNotification(errorData.message), NOTIFICATIONS.PAYMENT);
+    dispatch(showErrorNotification(errorData.message));
+    window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
   }
   setTimeout(() => {
     dispatch(hideNotification());
@@ -517,24 +505,16 @@ export const updateServiceAddress = (address, OD_CHECKOUT_ADDRESS_UPDATE_FAILURE
     dispatch(asyncFetchSucess());// action to hide loader
     if (response.data.statusCode === API_SUCCESS_CODE) {
       if (response.data.output.deviceConfigInfo.deviceAddressUpdated === true) {
-        if (sessionStorage.getItem('applePayEnabled') === 'true') {
-          if (response.data.output.applePayEnabled === undefined || response.data.output.applePayEnabled === false) {
-            /* eslint-disable no-param-reassign */
-            // WE REALLY NEED TO FIX THIS!!!
-            response.data.output.applePayEnabled = true;
-            response.data.output.appleMerchantIdentifier = sessionStorage.getItem('appleMerchantIdentifier');
-            response.data.output.applePaymentRequest = JSON.parse(sessionStorage.getItem('applePaymentRequest'));
-            /* eslint-enable */
-          }
-        }
         dispatch(resetState(response.data.output));// update the page with fresh data
         dispatch(hideNotification());
         hashHistory.push('/');
       } else {
-        dispatch(showErrorNotification(OD_CHECKOUT_ADDRESS_UPDATE_FAILURE_TEXT, NOTIFICATIONS.DEVICE));
+        dispatch(showErrorNotification(OD_CHECKOUT_ADDRESS_UPDATE_FAILURE_TEXT));
+        window.document.getElementById('devicesSection').scrollIntoView(scrollProps);
       }
     } else {
-      dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.DEVICE));
+      dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
+      window.document.getElementById('devicesSection').scrollIntoView(scrollProps);
     }
   }).catch(() => {
     dispatch(asyncFetchFalied());// on API failure
@@ -590,8 +570,8 @@ export const placeOrder = (submitOrderURL, optInShippingSMS, optInMtn, optInPape
   const shippingMethod = (state.form && state.form.chooseShippingMethod) ? state.form.chooseShippingMethod.values : null;
   if (shippingMethod && shippingMethod.shippingRadio === 'SDD_SAMEDAY' && (!shippingMethod.availWindows || shippingMethod.availWindows === 'title')) {
     dispatch(asyncFetchFalied());
-    dispatch(showErrorNotification(state.cqContent.error.DT_OD_CHECKOUT_SDD_MISSING_DELIVERYWINDOW, NOTIFICATIONS.SHIPPING));
-    document.getElementById('shippingSection').scrollIntoView();
+    dispatch(showErrorNotification(state.cqContent.error.DT_OD_CHECKOUT_SDD_MISSING_DELIVERYWINDOW));
+    window.document.getElementById('shippingSection').scrollIntoView(scrollProps);
   } else {
     request({
       method: 'post',
@@ -605,13 +585,13 @@ export const placeOrder = (submitOrderURL, optInShippingSMS, optInMtn, optInPape
       if (typeof response.status !== 'undefined' && response.status === 500) {
         dispatch(asyncFetchFalied());
         // The message should come from CQ JSON
-        dispatch(showErrorNotification(state.cqContent.error.SPINNER_ERROR_MSG, NOTIFICATIONS.SUMMARY));
+        dispatch(showErrorNotification(state.cqContent.error.SPINNER_ERROR_MSG));
       } else {
         dispatch(asyncFetchSucess());// action to hide loader
         if (response.data.statusCode === API_SUCCESS_CODE) {
           window.location = response.data.output.redirectURL;
         } else {
-          dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.SUMMARY));
+          dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
         }
       }
     }).catch(() => {
@@ -653,12 +633,13 @@ const updateStoreList = (storeList, zipCode) => ({
   data: { storeList, zipCode },
 });
 
-const fetchStoresNearBy = (zipCode, url, range, latLng) => {
+const fetchStoresNearBy = (zipCode, url, range, latLng, pagination) => {
   const params = {
     zipCode,
     range,
     latitude: latLng.lat,
     longitude: latLng.lng,
+    pageNum: pagination,
   };
   return request({
     method: 'post',
@@ -672,9 +653,9 @@ export const submitZipCode = (zipCode, latLng) => (dispatch, getState) => {
   const state = getState().toJS();
   const url = state.orderDetails.storeDetailsURL;
   const range = state.form.ispu.values.ispuDistance;
+
   fetchStoresNearBy(zipCode, url, range, latLng).then((response) => {
     dispatch(asyncFetchSucess());// action to hide loader
-
     if (response.data.statusCode === API_SUCCESS_CODE) {
       dispatch(updateStoreList(response.data.output, zipCode));
       dispatch(hideNotification());
@@ -703,23 +684,21 @@ export const submitISPU = (data) => (dispatch, getState) => {
     dispatch(asyncFetchSucess());
 
     if (response.data.statusCode === API_SUCCESS_CODE) {
-      if (sessionStorage.getItem('applePayEnabled') === 'true') {
-        if (response.data.output.applePayEnabled === undefined || response.data.output.applePayEnabled === false) {
-          /* eslint-disable no-param-reassign */
-          // WE REALLY NEED TO FIX THIS!!!
-          response.data.output.applePayEnabled = true;
-          response.data.output.appleMerchantIdentifier = sessionStorage.getItem('appleMerchantIdentifier');
-          response.data.output.applePaymentRequest = JSON.parse(sessionStorage.getItem('applePaymentRequest'));
-          /* eslint-enable */
-        }
-      }
       dispatch(resetState(response.data.output));// update the page with fresh data
-      dispatch(updateEditState(EDIT_STATE.SHIPPING, false));
       dispatch(hideNotification());
+
+      if (response.data.output.checkoutStates.contactInfoRequired === true) {
+        // hashHistory.push('/choosePaymentMethod');
+        dispatch(updateEditState(EDIT_STATE.SHIPPING, true));
+        dispatch(showErrorNotification(state.cqContent.error.DT_OD_CHECKOUT_EDIT_SECTION_CONTACT_INFO_REQUIRED_ERROR));
+      } else {
+        dispatch(updateEditState(EDIT_STATE.SHIPPING, false));
+      }
       if (response.data.output.checkoutStates.paymentRequired === true && response.data.output.selectedShippingType.type === 'ISPU' && response.data.output.billingInfo.selectedPaymentMode.toLowerCase() !== 'newcard') {
         // hashHistory.push('/choosePaymentMethod');
         dispatch(updateEditState(EDIT_STATE.PAYMENT, true));
-        dispatch(showErrorNotification(state.cqContent.error.DT_OD_CHECKOUT_PAYMENT_SECTION_ERROR, NOTIFICATIONS.PAYMENT));
+        dispatch(showErrorNotification(state.cqContent.error.DT_OD_CHECKOUT_PAYMENT_SECTION_ERROR));
+        window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
       }
     } else {
       dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.ISPU));
@@ -774,17 +753,6 @@ export const applePayOption = (appleMerchantIdentifier) => (dispatch) => {
     promise.then((canMakePayments) => {
       dispatch(asyncFetchSucess());
       dispatch(applePayOn(canMakePayments));
-      if (window.reviewOrderJSON && window.reviewOrderJSON.output) {
-        const outputJSON = window.reviewOrderJSON.output;
-        if (outputJSON && outputJSON.applePayEnabled === true) {
-          /* eslint-disable no-param-reassign */
-          // WE REALLY NEED TO FIX THIS!!!
-          sessionStorage.setItem('applePayEnabled', outputJSON.applePayEnabled);
-          sessionStorage.setItem('appleMerchantIdentifier', outputJSON.appleMerchantIdentifier);
-          sessionStorage.setItem('applePaymentRequest', JSON.stringify(outputJSON.applePaymentRequest));
-          /* eslint-enable */
-        }
-      }
     }).catch((error) => {
       dispatch(asyncFetchFalied());
       // eslint-disable-next-line no-console
@@ -825,7 +793,8 @@ export const checkGiftCardBalance = (data, index) => (dispatch, getState) => {
       dispatch(hideNotification());
     } else {
       dispatch(asyncFetchSucess());// action to hide loader
-      dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.PAYMENT));
+      dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
+      window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
     }
   }).catch((error) => {
     // eslint-disable-next-line no-console
@@ -854,10 +823,12 @@ export const submitGiftCard = (data) => (dispatch, getState) => {
       if ((response.data.output !== null && typeof response.data.output.goToSuccessURL !== 'undefined')) {
         window.location = response.data.output.goToSuccessURL;
       } else {
-        dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.PAYMENT));
+        dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
+        window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
       }
     } else {
-      dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.PAYMENT));
+      dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
+      window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
     }
   }).catch((error) => {
     // eslint-disable-next-line no-console
@@ -871,7 +842,8 @@ export const submitGiftCard = (data) => (dispatch, getState) => {
 export const showMasterpassError = () => (dispatch, getState) => {
   const { orderDetails } = getState().toJS();
   const billingInfo = { ...orderDetails.billingInfo, masterpassError: false };
-  dispatch(showErrorNotification(orderDetails.billingInfo.masterpassErrorMessage, NOTIFICATIONS.PAYMENT));
+  dispatch(showErrorNotification(orderDetails.billingInfo.masterpassErrorMessage));
+  window.document.getElementById('paymentSection').scrollIntoView(scrollProps);
   dispatch(updateEditState(EDIT_STATE.PAYMENT, true));
   dispatch(resetState({ ...orderDetails, billingInfo }));
 };
@@ -940,9 +912,9 @@ export const validateAuthCode = (authCode) => (dispatch, getState) => {
   });
 };
 
-export const updateDeviceInfo = (data, index, section) => (dispatch) => {
+export const updateDeviceInfo = (data, index, section) => (dispatch, getState) => {
   dispatch(asyncFetch());// action to show loader
-  // const state = getState().toJS();
+  const state = getState().toJS();
   // const url = state.orderDetails.sendSMSUrl;
   // Temporary as Integration in progress
   const url = '/od/cust/auth/checkout/validateAndPersistDeviceInfo';
@@ -950,7 +922,7 @@ export const updateDeviceInfo = (data, index, section) => (dispatch) => {
     if (response.data.statusCode === API_SUCCESS_CODE) {
       dispatch(hideNotification());
       dispatch(resetState(response.data.output));// update the page with fresh data
-      dispatch(asyncFetchSucess({ deviceInfoUpdated: true, deviceIndex: index }));
+      dispatch(asyncFetchSucess({ deviceInfoUpdated: true, deviceIndex: index, section }));
     } else if (response.data.statusCode !== API_SUCCESS_CODE) {
       if ((response.data.output !== null && typeof response.data.output.goToSuccessURL !== 'undefined')) {
         window.location = response.data.output.goToSuccessURL;
@@ -967,7 +939,8 @@ export const updateDeviceInfo = (data, index, section) => (dispatch) => {
     console.log('Catch Execption:', error);
     dispatch(asyncFetchFalied());// on API failure
     dispatch(hideNotification());
-    hashHistory.push('/genericError');
+    dispatch(showErrorNotification(state.cqContent.error.DT_OD_CHECKOUT_PORT_IN_GENERIC_ERROR));
+    // hashHistory.push('/genericError');
   });
 };
 
@@ -984,7 +957,8 @@ export const getNewNpanxx = (zipCode) => (dispatch) => {
       dispatch(asyncFetchSucess({ newNPANXX: true, ...response.data.output }));// action to hide loader
     } else {
       dispatch(asyncFetchSucess());
-      dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.DEVICE));
+      dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
+      window.document.getElementById('devicesSection').scrollIntoView(scrollProps);
     }
   }).catch((error) => {
     // eslint-disable-next-line no-console
@@ -995,51 +969,24 @@ export const getNewNpanxx = (zipCode) => (dispatch) => {
   });
 };
 
+
 export const changeForm = (form, field, value) => (dispatch) => {
   dispatch(change(form, field, value));
 };
 
-const setCyberSourceData = (data) => ({
-  type: CYBER_SOURCE_DATA,
-  data,
-});
-
-export const fetchCyberSourceDataApi = (orderId) =>
-  request({
-    method: 'get',
-    url: 'checkout/getCybersourceSignedData?orderId=' + orderId,
-  });
-
-export const fetchCyberSourceData = (orderId) => (dispatch) => {
-  dispatch(asyncFetch());
-  fetchCyberSourceDataApi(orderId).then((res) => {
+export const fetchZipCodeInfo = (zipCode) => (dispatch) => {
+  // dispatch(asyncFetch());
+  const url = '/od/cust/auth/checkout/getMarketDetails';
+  getAPI(url, { zipCode }).then((res) => {
     dispatch(asyncFetchSucess());
-    //const response = {"data" : {"output":{"orderId":"SDC88c19182644a0790f5be4e7f0d2cb465{d6}","httpPostUrl":"https://testsecureacceptance.cybersource.com/silent/pay","dataMap":{"unsigned_field_names":"card_type,card_number,card_expiry_date,card_cvn","amount":"1","bill_to_address_postal_code":"15317","signature":"2bs04hA20eZqvyfiruHELtZ5vBNup2rETmnVFOu4Q7M=","bill_to_address_state":"PA","transaction_uuid":"d63e9479-474d-4dae-8b2e-cdab9a1c939e","signed_field_names":"access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,payment_method,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,override_custom_receipt_page,ignore_avs","locale":"en","transaction_type":"authorization,create_payment_token","bill_to_email":"aa@aa.com","reference_number":"SDC88c19182644a0790f5be4e7f0d2cb465{d6}","ignore_avs":"true","bill_to_address_country":"US","bill_to_surname":"BELTRAN","bill_to_address_line1":"301 CARRIAGE HILL APT'S","profile_id":"602C4C13-900B-46DE-9668-76CB2D14F3E3","access_key":"f43969b9e54539e3ba6ad6bb1a24ee30","bill_to_phone":"9999999999","override_custom_receipt_page":"/checkout/payment/","bill_to_address_city":"MC MURRAY","currency":"USD","bill_to_forename":"BRIAN","signed_date_time":"2018-02-16T12:47:31Z","payment_method":"card"},"cardTypeMap":{"001":"Visa","002":"MasterCard","003":"American Express","004":"Discover"}},"errorMap":null,"statusMessage":"Service completed Successfully.","statusCode":"00"}};
-    dispatch(setCyberSourceData(res));
-  }).catch((err) => {
-    console.log('Error in err', err);
+    dispatch(asyncFetchSucess({ zipCodeInfoFetched: true, ...res.data }));// action to hide loader
+  }).catch((error) => {
+    // eslint-disable-next-line no-console
+    console.log('Catch Execption:', error);
+    dispatch(asyncFetchFalied());
   });
 };
 
-const setPostCyberSourceData = (data) => ({
-  type: CYBER_SOURCE_DATA,
-  data,
+export const resetZipCodeInfo = () => ({
+  type: RESET_ZIPCODE_INFO,
 });
-
-export const postCyberSourceDataApi = (data,url) =>
-  request({
-    method: 'post',
-    url,
-    data,
-  });
-
-export const postCyberSourceData = (data, url) => (dispatch) => {
-  dispatch(asyncFetch());
-  postCyberSourceDataApi(data, url).then((res) => {
-    dispatch(asyncFetchSucess());
-    //const response = {"data" : {"output":{"orderId":"SDC88c19182644a0790f5be4e7f0d2cb465{d6}","httpPostUrl":"https://testsecureacceptance.cybersource.com/silent/pay","dataMap":{"unsigned_field_names":"card_type,card_number,card_expiry_date,card_cvn","amount":"1","bill_to_address_postal_code":"15317","signature":"2bs04hA20eZqvyfiruHELtZ5vBNup2rETmnVFOu4Q7M=","bill_to_address_state":"PA","transaction_uuid":"d63e9479-474d-4dae-8b2e-cdab9a1c939e","signed_field_names":"access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,payment_method,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,override_custom_receipt_page,ignore_avs","locale":"en","transaction_type":"authorization,create_payment_token","bill_to_email":"aa@aa.com","reference_number":"SDC88c19182644a0790f5be4e7f0d2cb465{d6}","ignore_avs":"true","bill_to_address_country":"US","bill_to_surname":"BELTRAN","bill_to_address_line1":"301 CARRIAGE HILL APT'S","profile_id":"602C4C13-900B-46DE-9668-76CB2D14F3E3","access_key":"f43969b9e54539e3ba6ad6bb1a24ee30","bill_to_phone":"9999999999","override_custom_receipt_page":"/checkout/payment/","bill_to_address_city":"MC MURRAY","currency":"USD","bill_to_forename":"BRIAN","signed_date_time":"2018-02-16T12:47:31Z","payment_method":"card"},"cardTypeMap":{"001":"Visa","002":"MasterCard","003":"American Express","004":"Discover"}},"errorMap":null,"statusMessage":"Service completed Successfully.","statusCode":"00"}};
-    dispatch(setPostCyberSourceData(res));
-  }).catch((err) => {
-    console.log('Error in err', err);
-  });
-};

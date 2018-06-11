@@ -10,6 +10,7 @@
     "DT_OD_NS_COMPATIBLE": "This device can share a number with another compatible device on your account.",
     "DT_OD_NS_CHOOSE_NO_TITLE": "Choose a number to share",
     "DT_OD_NS_SHARE_EXISTING": "I want this device to share one of my numbers.",
+    "DT_OD_NS_OWN_NUMBER": "I want this device to have its own number",
     "DT_OD_NS_PROMPT_NEXT_CTA": "Continue",
     "DT_OD_NS_OWN_NO_TITLE": "Give this device its own number",
     "DT_OD_NS_OWN_NO_DESC": "This device can use its own phone number or continue to use an existing number if you're upgrading.",

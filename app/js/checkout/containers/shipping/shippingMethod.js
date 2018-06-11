@@ -7,7 +7,7 @@ import * as NotificationActions from '../../../common/NotificationBar/actions';
 const getShippingOptions = (shippingInfo, selectedShippingType, cqContent, paymentType, giftCardFlow) => {
   const _shippingInfo = Object.assign({}, shippingInfo);
   // If selected payment type as "Apple pay or PayPal", disable ISPU.
-  if (paymentType && (paymentType.toLowerCase() === 'applepay' || paymentType.toLowerCase() === 'paypal' || giftCardFlow)) {
+  if (paymentType && (giftCardFlow)) {
     _shippingInfo.ispuEligibleFlag = false;
   }
   // If activeSMSCapableMtnList is null or empty, disable ISPU.
@@ -71,7 +71,10 @@ function mapStateToProps(state) {
     poboExistsInCart: shippingInfo.poboExistsInCart,
     ...asyncCallStatus,
     giftCardFlow,
-    initialValues: { shippingRadio: (selectedShippingMethod ? selectedShippingMethod.shippingOptionId : null), availWindows: (selectedDeliveryWindow ? selectedDeliveryWindow.id : '') },
+    initialValues: {
+      shippingRadio: (selectedShippingMethod ? selectedShippingMethod.shippingOptionId : null),
+      availWindows: (selectedDeliveryWindow ? selectedDeliveryWindow.id : ''),
+    },
     selectedShippingRadio: form && form.values ? form.values.shippingRadio : '',
     selectedDeliveryWindow: form && form.values ? form.values.availWindows : '',
     standaloneAccessories: data.standaloneAccessories,

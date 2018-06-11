@@ -13,7 +13,6 @@ import {
   AGREEMENT_CLICKED,
   APPLE_PAY,
   UPDATE_EDIT_STATE,
-  CYBER_SOURCE_DATA,
 } from './constants';
 
 
@@ -120,17 +119,6 @@ export const editState = (state = {}, action) => {
     case UPDATE_EDIT_STATE: {
       const newState = { ...state.toJS(), [action.data.section]: action.data.value };
       return fromJS(newState);
-    }
-    default:
-      return state;
-  }
-};
-
-export const cyberSourceData = (state = {}, action) => {
-  switch (action.type) {
-    case CYBER_SOURCE_DATA: {
-      const newState = fromJS(action.data);
-      return newState;
     }
     default:
       return state;

@@ -20,11 +20,11 @@ const BuddyModal = (props) => (
   >
     <Row className="margin24 noSideMargin" style={{ margin: '36px 0 0 0' }}>
       <Notification message={props.cqContent.label.DT_OD_CHECKOUT_BUDDY_MODAL_MESSAGE} type="error" noClose noIcon />
-      <Col lg={3} md={3} className="margin24 noSideMargin">
-        <Button className="large primary width100" onClick={props.cancelOrder}>{props.cqContent.label.DT_OD_CHECKOUT_BUDDY_MODAL_CANCEL}</Button>
-      </Col>
-      <Col lg={3} md={3} className="margin24 noSideMargin">
+      <Col xs={3} className="margin24 noSideMargin">
         <Button className="large primary width100" onClick={props.submitOrder}>{props.cqContent.label.DT_OD_CHECKOUT_BUDDY_MODAL_CONTINUE}</Button>
+      </Col>
+      <Col xs={3} className="margin24 noSideMargin">
+        <Button className="large secondary width100" onClick={props.cancelOrder}>{props.cqContent.label.DT_OD_CHECKOUT_BUDDY_MODAL_CANCEL}</Button>
       </Col>
     </Row>
   </Modal>

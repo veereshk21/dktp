@@ -15,14 +15,7 @@ input:focus + div > div {
         visibility: hidden;
     }
 }
-.textField label {
-  pointer-events: all!important;
-  font-size: 13px !important;
-  color: rgb(116, 118, 118);
-}
-.mSelectWrapper > label {
-	color: rgb(116, 118, 118);
-}
+
 .password input {
     text-security: disc;
     -webkit-text-security:disc;

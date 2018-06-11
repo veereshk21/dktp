@@ -1,0 +1,91 @@
+/** Promotional Banners **/
+
+.promoBanner {
+  min-height: 60px;
+  background: #000;
+  color: #FFF;
+  padding-right: 6px;
+  position: relative;
+}
+
+.promoBanner .tooltip:before {
+  color: #FFF
+}
+
+/** Specific Radio Button and Checkbox Label styles **/
+
+.radioLabel {
+  width: calc(100% - 25px);
+}
+
+.checkboxLabel {
+  width: calc(100% - 30px);
+}
+
+/* Overiding Flex grid so noPad works*/
+
+[class^="col-"].noPad {
+  padding: 0;
+}
+
+[class^="col-"].noLeftPad {
+  padding-left: 0;
+}
+
+[class^="col-"].noRightPad {
+  padding-right: 0;
+}
+
+.row.noMargin {
+  margin: 0;
+}
+
+/** Ordersummary Accordion Changes  **/
+
+.accordionItem {
+  min-height: 50px;
+}
+
+.orderSummary .row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.orderSummary .accordion .row>[class^="col-"]:first-child {
+  padding-left: 0;
+}
+
+.orderSummary .accordion .row>[class^="col-"]:last-child {
+  padding-right: 0;
+}
+
+.orderSummary .accordion__body>*:last-child {
+  margin-bottom: 12px;
+}
+
+/* Order Summary Section Behavior */
+
+@media only screen and (max-width: 983px) {
+  .mainContent,
+  .sideBarContent {
+    -ms-flex-preferred-size: 100% !important;
+    flex-basis: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+button:focus,
+a:focus,
+select:focus,
+.accordion__title:focus,
+.checkbox:focus~label:before,
+.radioBtn:focus+label:before,
+.textField:focus-within>div {
+  outline: #000 dotted 1px !important;
+  outline-offset: 1px;
+}
+
+button.tooltip.white:focus {
+  outline: #FFF dotted 1px !important;
+  outline-offset: 1px;
+}

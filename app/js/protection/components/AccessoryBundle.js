@@ -1,7 +1,7 @@
-/* eslint linebreak-style: ["error", "windows"] */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Col, Row } from 'react-flexbox-grid';
+import RadioButton from '../../common/RadioButton/index';
 
 class AccessoryBundle extends React.Component {
   handleOptionChange(data) {
@@ -51,24 +51,21 @@ class AccessoryBundle extends React.Component {
                         <Row>
                           <Col sm={10} md={10}>
                             <Row>
-                              <input
-                                tabIndex={index}
-                                id={'Bundle' + index}
-                                className="radioCustom"
-                                defaultChecked={defaultSelection === item.skuID}
-                                type="radio"
+                              <RadioButton
                                 name="BundleBuilder"
+                                id={'Bundle' + index}
                                 value={item.displayName}
-                                role="radiogroup"
+                                containerClassName=" "
+                                labelClassName="verticalTop displayInlineBlock pad12 onlyLeftPad width90"
+                                checked={defaultSelection === item.skuID}
                                 onChange={this.handleOptionChange.bind(this, item)}
-                              />
-                              <label htmlFor={'Bundle' + index} className="radioCustom_label m-priceLabel width80">
-                                <div className="priceLabel floatNone displayInlineBlock margin12 onlyLeftMargin verticalAlignMiddle">
+                              >
+                                <div className="fontSize_4">
                                   <p tabIndex={index} className="bold pad5 onlyTopPad">
                                     {item.displayName}
                                   </p>
                                 </div>
-                              </label>
+                              </RadioButton>
                             </Row>
                           </Col>
                           <Col sm={2} md={2}>
@@ -91,14 +88,14 @@ class AccessoryBundle extends React.Component {
                         }
                       </Col>
                     </Row>
-                    <Row className="clearfix margin10 onlyTopMargin pad48 onlyLeftPad">
+                    <Row className="clearfix margin10 onlyTopMargin pad20 onlyLeftPad">
                       <Col sm={12} md={12}>
                         {item.bundleBreakdown.map((accessory, i) => (
                           <Row key={`acc${i}`} className={i > 0 ? 'positionRelative border_grayThree onlyTopBorder pad12 noSidePad clearfix' : 'positionRelative pad12 noSidePad clearfix'}>
                             <Col sm={12} md={12}>
                               <Row>
                                 <Col sm={2} md={2}>
-                                  <img src={accessory.skuDetails[0].imageUrl} width="90px" alt={accessory.displayName} />
+                                  <img src={accessory.skuDetails[0].imageUrl} width="100%" alt={accessory.displayName} />
                                 </Col>
                                 <Col sm={8} md={8}>
                                   <p className="pad24 onlyTopPad">{accessory.displayName}</p>
@@ -130,23 +127,21 @@ class AccessoryBundle extends React.Component {
                   <Row className="margin12 onlyLeftMargin">
                     <Col sm={12} md={12}>
                       <Row>
-                        <input
-                          id={'Bundle' + this.props.bundleData.length}
-                          className="radioCustom"
-                          defaultChecked={!defaultSelection}
-                          type="radio"
+                        <RadioButton
                           name="BundleBuilder"
+                          id={'Bundle' + this.props.bundleData.length}
                           value={cqContent.label.DT_OD_PROTECTION_BUNDLE_NO_THANKS_TEXT}
-                          role="radiogroup"
+                          containerClassName=" "
+                          labelClassName="verticalTop displayInlineBlock pad12 onlyLeftPad"
+                          checked={!defaultSelection}
                           onChange={this.handleOptionChange.bind(this, null)}
-                        />
-                        <label htmlFor={'Bundle' + this.props.bundleData.length} className="radioCustom_label m-priceLabel width100">
-                          <div className="priceLabel floatNone displayInlineBlock margin12 onlyLeftMargin verticalAlignMiddle">
+                        >
+                          <div className="fontSize_4">
                             <p className="bold pad5 onlyTopPad">
                               {cqContent.label.DT_OD_PROTECTION_BUNDLE_NO_THANKS_TEXT}
                             </p>
                           </div>
-                        </label>
+                        </RadioButton>
                       </Row>
                     </Col>
                   </Row>

@@ -5,7 +5,7 @@
     "DT_OD_MDN_DPP_APPRAISAL_DESCRIPTION": "&lt;p class=&quot;margin12 fontSize_3 &quot;&gt; After you complete your order, we'll send you a prepaid shipping box that you can use to mail us your old device after receiving your new device upgrade.&lt;/p&gt;&lt;p class=&quot;margin12 fontSize_3&quot;&gt;Please note that if the device does not arrive in the condition described,  a charge will be added to your next bill.&lt;/p&gt;",
     "DT_OD_PAST_DUE_BALANCE_TITLE": "You have a past due balance of $%pastDuePrice% on your account.",
     "DT_OD_MDN_ALWAYS_ELIGIBLE_TRANSFER_MESSAGE": "<div>Note: This line is receiving a discount on monthly line access cost beacause it is on month-to-month service.</div><div>By completing this transfer, the line access cost for this device will increase to $40/mo.</div>",
-    "DT_OD_PAY_OFF_DEVICE_PAYMENT_AGREEMENT_MESSAGE": "<p class=margin6 onlyTopMargin>By clicking Upgrade below, you are requesting to pay off your device payment agreement balance in full. Once this payment is successfully completed as part of this order, the payment cannot be reversed and installment payments cannot be reinstated. If the payment is cancelled, rejected, or reversed after the successful completion of this order, a lump sum in that amount will appear on your following month's bill..</p>"
+    "DT_OD_PAY_OFF_DEVICE_PAYMENT_AGREEMENT_MESSAGE": "<p class=margin6 onlyTopMargin>By clicking Upgrade below, you are requesting to pay off your device payment agreement balance in full. Once this payment is successfully completed as part of this order, the payment cannot be reversed and installment payments cannot be reinstated. If the payment is canceled, rejected, or reversed after the successful completion of this order, a lump sum in that amount will appear on your following month's bill.</p>"
   },
   "label": {
     "DT_OD_MDN_FIND_MY_DEVICE_CTA": "Next",
@@ -105,8 +105,8 @@
     "DT_OD_MDN_EUP_PENDING_DESC": "Is it okay if we go ahead and cancel that feature change so you can continue with your upgrade ?",
     "DT_OD_MDN_EUP_PENDING_NO_THANKS": "No thanks",
     "DT_OD_MDN_EUP_PENDING_CANCEL_BUTTON": "Yes, cancel it and continue",
-    "DT_OD_MDN_EUP_PENDING_CONF_HEADER": "Pending Order Cancellation confirmation",
-    "DT_OD_MDN_EUP_PENDING_CONF_MSG": "You have successfully cancelled your pending price plan change. You can now continue with placing your new order. Please select 'Continue' below.",
+    "DT_OD_MDN_EUP_PENDING_CONF_HEADER": "Pending Order Cancelation confirmation",
+    "DT_OD_MDN_EUP_PENDING_CONF_MSG": "You have successfully canceled your pending order. You can now continue with placing your new order. Please select 'Continue' below.",
     "DT_OD_MDN_EUP_PENDING_CONTINUE_BUTTON": "Continue",
     "DT_OD_MDN_PENDING_AAL_TITLE": "Add a Line",
     "DT_OD_MDN_PENDING_AAL_ORDER_NO_LABEL": "Order Number",
@@ -125,7 +125,8 @@
     "DT_OD_MDN_ALWAYS_ELIGIBLE_TRANSFER_FROM": "Transfer an upgrade from",
     "DT_OD_MDN_NEXT_UPGRADE": "Next Upgrade date",
     "DT_OD_MDN_CONTRACT_ENDSM": "Contract ends",
-    "DT_OD_CREDIT_AUTH_LEGAL_COPY": "Subject to credit authorization, account standing and other qualifying conditions. Taxes and fees not included."
+    "DT_OD_CREDIT_AUTH_LEGAL_COPY": "Subject to credit authorization, account standing and other qualifying conditions. Taxes and fees not included.",
+    "DT_OD_MDN_GOT_IT": "Got it"
   },
   "error": {}
 }

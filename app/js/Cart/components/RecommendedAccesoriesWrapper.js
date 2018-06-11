@@ -63,7 +63,7 @@ class RecommendedAccesoriesWrapper extends Component {
                 style={{
                   height: '214px',
                   display: 'flex',
-                  webkitBoxAlign: 'center',
+                  WebkitBoxAlign: 'center',
                   msFlexAlign: 'center',
                   alignItems: 'center',
                 }}

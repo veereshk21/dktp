@@ -2,3 +2,7 @@ input + div > hr {
     speak: none;
 }
 
+.textField label {
+  pointer-events: all!important;
+  font-size: 13px !important;
+}

@@ -85,6 +85,7 @@ class ShippingMethod extends Component {
       showUpdatedAddress: true,
       standaloneAccessories,
       deliveryWindow: (selectedDeliveryWindow && selectedShippingRadio === 'SDD_SAMEDAY') ? selectedDeliveryWindow : null,
+      shipOptionChangeOnly: true,
     };
     for (const prop in param) {
       if (param[prop] === null) {
@@ -98,10 +99,11 @@ class ShippingMethod extends Component {
 
   renderOptions = () => {
     const { shippingInfo, cqContent } = this.props;
+    const siteId = window.siteId;
     const renderedOptions = shippingInfo.shippingTypesInfo.map((option, index) => {
       const radioName = `shippingRadio${index}`;
       const radioBTNClass = (option.ispuOption === true && ((shippingInfo.contactInfo.activeSMSCapableMtnList === null) || (shippingInfo.contactInfo.activeSMSCapableMtnList.length === 0)));
-      return (
+     return (
         <Row key={index} className="pad6 noSidePad">
           <Col xs={5}>
             <RadioButton
@@ -133,7 +135,7 @@ class ShippingMethod extends Component {
     const { cqContent, shippingInfo, poboMessage, selectedShippingRadio } = this.props;
     const sddJSON = shippingInfo.shippingTypesInfo.filter((option) => option.shippingOptionId === 'SDD_SAMEDAY');
     const availWindows = sddJSON && sddJSON.length === 1 ? sddJSON[0] : sddJSON;
-
+    
     return (
       <div>
         {this.state.ispuModalVisible &&
@@ -152,17 +154,17 @@ class ShippingMethod extends Component {
         <div className="margin20 noSideMargin">
           <Row>
             <Col xs={5}>
-              <p className="bold fontSize_5">
+              <p className="h3">
                 {cqContent.label.DT_OD_CHECKOUT_SHIPPING_METHOD_HEADER_SHIPPING_OPTION}
               </p>
             </Col>
             <Col xs={3}>
-              <p className="bold fontSize_5">
+              <p className="h3">
                 {cqContent.label.DT_OD_CHECKOUT_SHIPPING_METHOD_HEADER_PRICE}
               </p>
             </Col>
             <Col xs={4}>
-              <p className="bold fontSize_5">
+              <p className="h3">
                 {cqContent.label.DT_OD_CHECKOUT_SHIPPING_METHOD_HEADER_DELIVERY_ESTIMATE}
               </p>
             </Col>
@@ -220,5 +222,6 @@ ShippingMethod.propTypes = {
 // export default ShippingMethod;
 export default reduxForm({
   form: 'chooseShippingMethod',
+  enableReinitialize: true,
   // validate,
 })(ShippingMethod);

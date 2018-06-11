@@ -40,7 +40,7 @@ __webpack_public_path__ = window.resourceBaseUrl;
 
 axios.get(__webpack_public_path__ + cq).then((result) => {
   const initialState = {
-    ...window.guestLoginJSON.output || {},
+    guestLoginDetails: window.guestLoginJSON.output || {},
     cqContent: result.data || {
       html: {},
       label: {},

@@ -5,6 +5,7 @@ import { Col, Row } from 'react-flexbox-grid';
 import Anchor from './../../common/A/A';
 import AsyncComponent from './../../common/AsyncComponent';
 import ChatAndC2C from '../../common/ChatAndC2C';
+import RadioButton from '../../common/RadioButton/index';
 
 const TMPMultiDeviceDropdDown = AsyncComponent(() => import('./TMPMultiDeviceDropdDown'));
 const SingDeviceProtection = AsyncComponent(() => import('./SingDeviceProtection'));
@@ -312,7 +313,7 @@ class ProtectionPlans extends Component {
     return (
       item.additionalTapList && (
         <Col xs={10} className="margin20 onlyTopMargin">
-          <div className="priceLabel floatNone margin45 onlyLeftMargin">
+          <div className="priceLabel floatNone margin40 onlyLeftMargin">
             <div className="bold margin6 onlyBottomMargin">Protect additional devices for $9/month</div>
             <form
               name="claimsForm"
@@ -366,25 +367,20 @@ class ProtectionPlans extends Component {
               return (
                 <Row key={protection.index} className="pad12 noSidePad margin30 onlyBottomMargin">
                   <Col xs={10}>
-                    <input
-                      tabIndex={protection.index}
-                      id={'protectionRadio_' + protection.index}
-                      className="radioCustom"
-                      checked={
-                        protection.sfoSkuId === this.state.selectedOption
-                      }
-                      type="radio"
+                    <RadioButton
                       name="protectionOption"
+                      id={'protectionRadio_' + protection.index}
                       value={protection.sfoSkuId}
-                      role="radiogroup"
+                      containerClassName=" "
+                      labelClassName="verticalTop displayInlineBlock pad12 onlyLeftPad width90"
+                      checked={protection.sfoSkuId === this.state.selectedOption}
                       onChange={this._protectionOptionChange.bind(this, protection)}
-                    />
-                    <label htmlFor={'protectionRadio_' + protection.index} className="radioCustom_label m-priceLabel  width100">
-                      <div className="priceLabel floatNone displayInlineBlock margin12 onlyLeftMargin verticalAlignMiddle">
+                    >
+                      <div className="fontSize_4">
                         <p tabIndex={protection.index} className="bold fontSize_5">{protection.displayName}</p>
                         <p className="pad6 onlyTopPad" tabIndex={protection.index} dangerouslySetInnerHTML={{ __html: `${protection.introText}` }} />
                       </div>
-                    </label>
+                    </RadioButton>
                   </Col>
                   <Col xs={2}>
                     <p tabIndex={protection.index} className="bold fontSize_5 textRight">
@@ -433,9 +429,9 @@ class ProtectionPlans extends Component {
           </div>
           {appleCare && <AppleCare cqContent={cqContent} appleCare={appleCare} appleCareSelected={this.state.appleCareSelected} selectedAppleCareOpt={this.state.selectedAppleCareOpt} onAppleCareChange={this._appleCareOnChange} />
           }
-          <Row className="border_black borderSize_4 noSideBorder">
+          <Row className="border_black borderSize_4 onlyTopBorder">
             <Col sm={12} md={12}>
-              {(typeof bundleData !== 'undefined' && bundleData !== null && bundleData.length > 0) && <AccessoryBundle defaultSelection={bundleItemInCart && bundleItemInCart.skuId} bundleData={bundleData} cqContent={cqContent} onBundleSelected={(bundle) => this.setState({ selectedBundleDetails: bundle })} />}
+              {(typeof bundleData !== 'undefined' && bundleData !== null && bundleData.length > 0) && <AccessoryBundle defaultSelection={(bundleItemInCart && bundleItemInCart.skuId) ? bundleItemInCart.skuId : (this.state.selectedBundleDetails && this.state.selectedBundleDetails.skuId)} bundleData={bundleData} cqContent={cqContent} onBundleSelected={(bundle) => this.setState({ selectedBundleDetails: bundle })} />}
             </Col>
           </Row>
           {!this.state.selectedOption &&
@@ -448,17 +444,19 @@ class ProtectionPlans extends Component {
             </Row>
           }
         </div>
-        <div>
-          <div className="margin36 noSideMargin textAlignCenter clearfix">
-            <button className="button secondary large floatLeft" onClick={this.onGotoPrevTabHandler}>
-              {cqContent.label.DT_OD_DEVICE_PROTECTION_BACK_BTN}
-            </button>
-            <Anchor onClick={this.toggleView} className="fontSize_5 color_black textDecUnderline bold displayInlineBlock margin15 onlyTopMargin cursorPointer">{cqContent.label.DT_OD_PROTECTION_TC_LINK}</Anchor>
-            <button className="button primary large floatRight" disabled={this.state.selectedPlanDetails === null || Object.keys(this.state.selectedPlanDetails).length === 0 || (this.props.appleCare && !this.state.appleCareSelected)} onClick={this.submitProtectionHandler}>
-              {cqContent.label.DT_OD_DEVICE_PROTECTION_SAVE_BTN_TXT}
-            </button>
-          </div>
-        </div>
+        <Row className="protectionNav background_gray_one border_black onlyTopBorder borderSize_4 pad60 onlyBottomPad">
+          <Col xs={12}>
+            <div className="margin15 noSideMargin textAlignCenter clearfix">
+              <button className="button secondary large floatLeft" onClick={this.onGotoPrevTabHandler}>
+                {cqContent.label.DT_OD_DEVICE_PROTECTION_BACK_BTN}
+              </button>
+              <Anchor onClick={this.toggleView} className="fontSize_5 color_black textDecUnderline bold displayInlineBlock margin15 onlyTopMargin cursorPointer">{cqContent.label.DT_OD_PROTECTION_TC_LINK}</Anchor>
+              <button className="button primary large floatRight" disabled={this.state.selectedPlanDetails === null || Object.keys(this.state.selectedPlanDetails).length === 0 || (this.props.appleCare && !this.state.appleCareSelected)} onClick={this.submitProtectionHandler}>
+                {cqContent.label.DT_OD_DEVICE_PROTECTION_SAVE_BTN_TXT}
+              </button>
+            </div>
+          </Col>
+        </Row>
       </div>
     );
   }

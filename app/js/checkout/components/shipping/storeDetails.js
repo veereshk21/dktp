@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import EditButton from '../../../common/EditButton/index';
-import { EDIT_STATE } from '../../constants';
 
 const StoreDetails = (props) => {
-  const { cqContent, edit } = props;
+  const { cqContent } = props;
   const { storeAddress, storeHours } = props.ispudetailsInfo;
   const storeHoursArray = [];
   if (storeHours) {
@@ -18,12 +17,10 @@ const StoreDetails = (props) => {
       <div className="margin18 onlyBottomMargin">
         <div className="margin12 onlyBottomMargin">
           <h3 className="fontSize_5 displayInlineBlock verticalBottom">{cqContent.label.DT_OD_CHECKOUT_SHIPPING_ISPU_DETAILS_NOTIFICATON_TITLE}</h3>
-          {!edit &&
-            <EditButton onClick={() => props.updateEditState(EDIT_STATE.SHIPPING, true)} />
-          }
+          <EditButton onClick={props.showIspuModal} />
         </div>
         <p className="margin12 noSideMargin">
-          {edit ? cqContent.label.DT_OD_CHECKOUT_SHIPPING_ISPU_DETAILS_NOTIFICATON_EDIT_DESCRIPTION : cqContent.label.DT_OD_CHECKOUT_SHIPPING_ISPU_DETAILS_NOTIFICATON_DESCRIPTION}
+          {cqContent.label.DT_OD_CHECKOUT_SHIPPING_ISPU_DETAILS_NOTIFICATON_DESCRIPTION}
         </p>
       </div>
       <div className="margin18 noSideMargin">
@@ -42,14 +39,6 @@ const StoreDetails = (props) => {
           <p key={`storeHour-${index}`}>{day}</p>
         ))}
       </div>
-      {edit &&
-        <button
-          className="fontSize_3 link background_transparent displayInlineBlock bold borderSize_0 noPad"
-          onClick={props.showIspuModal}
-        >
-          {cqContent.label.DT_OD_CHECKOUT_SHIPPING_ISPU_DETAILS_CHANGE_STORE}
-        </button>
-      }
     </div>
   );
 };
@@ -57,7 +46,6 @@ const StoreDetails = (props) => {
 
 StoreDetails.propTypes = {
   cqContent: PropTypes.object,
-  edit: PropTypes.bool,
   ispudetailsInfo: PropTypes.object,
   updateEditState: PropTypes.func, //eslint-disable-line
   showIspuModal: PropTypes.func,

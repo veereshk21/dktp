@@ -4,14 +4,8 @@ import PromoBanners from './promoBanners';
 
 const Header = (props) => (
   <div className="pad24 background_black">
-    {typeof props.oneClickCheckout !== 'undefined' && props.oneClickCheckout ?
-      <div>
-        <h1 className="color_FFF margin20 onlyBottomMargin"> {props.cqContent.label.DT_OD_CHECKOUT_SUCCESS_MAIN_TITLE} </h1>
-        <p className="color_FFF margin20 noSideMargin fontSize_6">{props.cqContent.label.DT_OD_CHECKOUT_ALMOST_DONE_NOTIFICATION}</p>
-      </div>
-      :
-      <h1 className="color_FFF margin20 onlyBottomMargin"> {props.cqContent.label.DT_OD_CHECKOUT_CHECK_MAIN_TITLE} </h1>
-    }
+    <h1 className="color_FFF margin20 onlyBottomMargin"> {props.cqContent.label.DT_OD_CHECKOUT_SUCCESS_MAIN_TITLE} </h1>
+    <p className="color_FFF margin20 noSideMargin fontSize_6">{props.cqContent.label.DT_OD_CHECKOUT_ALMOST_DONE_NOTIFICATION}</p>
     <hr className="margin48 noSideMargin" aria-hidden />
     <PromoBanners {...props} />
   </div>
@@ -19,6 +13,5 @@ const Header = (props) => (
 
 Header.propTypes = {
   cqContent: PropTypes.object,
-  oneClickCheckout: PropTypes.bool,
 };
 export default Header;

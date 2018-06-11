@@ -56,6 +56,10 @@
     "DT_OD_CONFIRMATION_BILLING_INFOMATION": "Billing Infomation",
     "DT_OD_CONFIRMATION_SHIPPING_TYPE": "Shipping type",
     "DT_OD_CONFIRMATION_SHIPPING_TO": "Ship to",
+    "DT_OD_CONFIRMATION_ISPU": "In-Store Pickup",
+    "DT_OD_CONFIRMATION_STORE_LOCATION": "Store Location",
+    "DT_OD_CONFIRMATION_STORE_HOURS": "Store Hours",
+    "DT_OD_CONFIRMATION_STORE_DIRECTIONS": "Directions",
     "DT_OD_CONFIRMATION_DEVICE_BUYOUT":"DeviceBuyoutAmount:",
     "DT_OD_CONFIRMATION_MONTHLY_SAVE":"Total Employee Monthly Savings:",
     "DT_OD_CONFIRMATION_SHIPPING_INFOMATION": "Shipping Infomation",
@@ -90,7 +94,8 @@
     "DT_OD_CONFIMARTION_TOTAL_EDGE_UP_BUYOUT_AMOUNT":"Remaining balance on current device",
     "DT_OD_CONFIMARTION_UPGRADE_FEE_TEXT": "One-Time Upgrade Fee : ",
     "DT_OD_CONFIRMATION_DEVICEID_TEXT": "Device Id ending in",
-    "DT_OD_CONFIMARTION_ON_NEXT_BILL": "On Next Bill"
+    "DT_OD_CONFIMARTION_WAIVED_UPGRADE_FEE_TEXT": "Waived upgrade fee",
+    "DT_OD_CONFIMARTION_OFFER_DISCOUNT_TEXT": "Discount"
   },
   "error": {
   }

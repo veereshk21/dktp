@@ -41,7 +41,21 @@ const cartJSON =  {
 			"inventoryAvailableDate": null,
 			"hasEcpdDiscount": false,
 			"hasEcpdDiscountForDevicePayment": false,
-			"devicePromotionList": [],
+			"devicePromotionList": [
+				{
+				  "promotionalMessage": null,
+				  "promoDescription": "UAT NON RESTRICTED WAIVED UPGRADE FEE W DPP UPG",
+				  "promoName": "UAT NON RESTRCD WAIVED UPGRADE FEE W DPP UPG",
+				  "promoAmount": "30.00",
+				  "priceSubTitle": "1st installment will appear on your bill.",
+				  "barCodeId": null,
+				  "itemCode": "UPGRADEFEE30",
+				  "itemType": "ITP",
+				  "sedOffer": true,
+				  "isUpgradeFeeWaivedOffer": true, // dont display discout applied ? 
+				  "promoContentText": null
+				},
+			  ],
 			"bicOfferApplied": false,
 			"bicContractPrice": 0.0,
 			"bicDiscountedContractPrice": 0.0,
@@ -79,7 +93,7 @@ const cartJSON =  {
 			"portIn": false,
 			"deviceNickName": "Moto Z Force Droid",
 			"totalNumberShareExtension": 0,
-			"originalUpgradeFee": "0.00",
+			"originalUpgradeFee": "30.00",
 			"totalSavings": null,
 			"sbdOffer": null,
 			"hostCommerceItemId": null,
@@ -262,6 +276,22 @@ const cartJSON =  {
 		"additionalCharges": [],
 		"accessoryGWURL": "/od/cust/auth/accessories/",
 		"accessoryPDPURL": "/od/cust/auth/accessoryDetails/",
+    "authInfo": {
+      "clients": {
+        "CARDINAL3DSECURE": {
+          "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJPYjhmMTIzOWVkODUzYjhkYzlmMjQ1ZGIxMjZjMWNiNzB7c3MyfSIsImlhdCI6MTUyNDc1NjU1NywiaXNzIjoiNWFkMGJjMTQ4NTI4MmMzZmI4NTk5ZWFhIiwiT3JnVW5pdElkIjoiNTZlYmFjNzMzM2ZhZGQ3MjZjYTI0MGEzIiwiUGF5bG9hZCI6eyJPcmRlckRldGFpbHMiOnsiQ3VycmVuY3lDb2RlIjoiVVNEIiwiQW1vdW50IjoiNTk1MCIsIk9yZGVyTnVtYmVyIjoiT2I4ZjEyMzllZDg1M2I4ZGM5ZjI0NWRiMTI2YzFjYjcwe3NzMn0iLCJUcmFuc2FjdGlvbklkIjoiMWNjMTdhMzgtYmM1OS00Y2Q2LWJiZjctZGZmMmU4YmVhNzQzIn19LCJPYmplY3RpZnlQYXlsb2FkIjp0cnVlLCJSZWZlcmVuY2VJZCI6IlBPTzllZDA5ZTQ4LTMzNTUtNGViNi05ZGM5LWZiYTkzMTExOTI4OXtzczJ9IiwiZXhwIjoxNTI0NzYzNzU3fQ._LKPM_TwTcXvY1r6F8w0LPlmz7HUL8fmdl7Z1QtC4yM",
+          "tokenType": "JWT",
+          "featuresList": {
+            "binDetection": true
+          }
+        }
+      }
+    },
+    "masterpass3DSecure": {
+      "acsUrl": "https://0eaf.cardinalcommerce.com/EAFService/jsp/v1/redirect",
+      "payload": "P.ad4fdcb64d78a20ce54b7c63342e8deaf6eb7e7902142202aee020bc3a55c303a9ce517e1851121b2504853e0816790d746db0c08dd37732e0e496585ded3dbf",
+      "transId": "qasYi3LZYiZ1kr9PDUY0"
+    },
 		"masterpassEnabled": true,
         "masterpassConfigInfo": {
             "checkoutId": "5bd000439abf4d099b81849073aec211",
@@ -332,6 +362,7 @@ const cartJSON =  {
 		"changeZipCodeURL": "/od/cust/auth/cart/changezipcode/",
 		"addOrUpdateFeatureURL": "/od/cust/auth/cart/addOrUpdateFeature",
 		"initiateCheckoutURL": "/od/cust/auth/checkout/initiateCheckout",
+    "handleCardinalResponseURL": "/od/cust/auth/checkout/handleCardinal3DResponse",
 		"accountMember": false,
 		"tmpMdOpted": true,
 		"tmpMd": {

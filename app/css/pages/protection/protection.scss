@@ -2,3 +2,19 @@
 .checkbox ~ label:before {
     vertical-align: top;
 }
+.radioCustom:checked + .radioCustom_label.m-priceLabel:before, .radioCustom:checked + input[type=hidden] + .radioCustom_label.m-priceLabel:before{
+    outline:1px dotted;
+}
+
+.protectionNav {
+    position: sticky;
+    position: -webkit-sticky;
+    position: -moz-sticky;
+    position: -ms-sticky;
+    position: -o-sticky;
+    bottom: 0;
+}
+.protectionContent .row {
+    margin-left: 0;
+    margin-right: 0;
+}

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { getNotificationCssClass } from './../Helpers/index';
 
 class Notification extends Component {
   constructor(props) {
@@ -13,7 +14,7 @@ class Notification extends Component {
     this.setState({ isVisible: !isVisible });
   }
   render() {
-    const { type, message } = this.props;
+    const { message } = this.props;
     const { isVisible } = this.state;
     const showClose = this.props.noClose || false;
     return (
@@ -21,7 +22,7 @@ class Notification extends Component {
         <div
           key="120"
           role="alertdialog"
-          className={`notification ${type === 'error' ? 'm-warning' : 'm-info'}`}
+          className={getNotificationCssClass(this.props.type)}
         >
           <div className="notification_wrap grid">
             <div className="notification_content fontTextMedium">

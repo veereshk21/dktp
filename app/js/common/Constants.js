@@ -32,7 +32,10 @@ export const MODAL_CSS_CLASSES = '';
 export const NEXT_LINK_CSS_CLASSES = '';
 
 // Notification
-export const NOTIFICATION_CSS_CLASSES = '';
+export const NOTIFICATION_ERROR_CSS_CLASS = 'error';
+export const NOTIFICATION_WARNING_CSS_CLASS = 'warning';
+export const NOTIFICATION_SUCCESS_CSS_CLASS = 'success';
+export const NOTIFICATION_INFO_CSS_CLASS = 'info';
 
 // Panel
 export const PANEL_CSS_CLASSES = '';

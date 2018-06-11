@@ -19,13 +19,16 @@ class PlanInfo extends Component {
   getPlanName(plan) {
     // TODO: Should have plan capacity coming from backend post 4/24, need to revisit the code and make the changes
     let planCapacity = plan.match(/\d/g);
-    planCapacity = planCapacity.join('');
-    return (
-      <div>
-        <div className="bold fontSize_13 color_000">{planCapacity}</div>
-        <div className="fontSize_13 color_000">{this.props.cqContent.label.DT_OD_GB_TEXT}</div>
-      </div>
-    );
+    if (planCapacity) {
+      planCapacity = planCapacity.join('');
+      return (
+        <div>
+          <div className="bold fontSize_13 color_000">{planCapacity}</div>
+          <div className="fontSize_13 color_000">{this.props.cqContent.label.DT_OD_GB_TEXT}</div>
+        </div>
+      );
+    }
+    return (<div />);
   }
 
   toggleModal() {

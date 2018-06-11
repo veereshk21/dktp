@@ -163,7 +163,15 @@ export default class MDNSelection extends React.Component {
     const { accountLevelInEligibleDetails, ajaxCallSelectedMTN, getLoanInfoPreOrder } = this.props;
 
     if (((mdnDetails.inEligibleCode === '08' || mdnDetails.inEligibleCode === '10' || mdnDetails.inEligibleCode === '11' || mdnDetails.inEligibleCode === '12' || mdnDetails.inEligibleCode === 'PENDING_SWITCH_ORDER' || mdnDetails.inEligibleCode === 'PENDING_ORDER') && mdnDetails.inEligibleDetails) || (accountLevelInEligibleDetails && accountLevelInEligibleDetails.toJS().accountLevelEUPInEligibleDetails)) {
-      hashHistory.push(`/pendingOrder?mdn=${mdnDetails.mtn}`);
+      if (mdnDetails.inEligibleCode === '10' || mdnDetails.inEligibleCode === 'PENDING_SWITCH_ORDER') {
+        hashHistory.push(`/pendingOrder?mdn=${mdnDetails.mtn}`);
+      } else {
+        this.setState({
+          isFetching: false,
+        });
+        this.props.changeSelectedMDN(mdnDetails);
+        this.openEUPPendingModal();
+      }
     } else if (typeof ajaxCallSelectedMTN !== 'undefined' && ajaxCallSelectedMTN !== null) {
       getLoanInfoPreOrder(mdnDetails.encryptedMTN, ajaxCallSelectedMTN);
     } else {
@@ -196,7 +204,7 @@ export default class MDNSelection extends React.Component {
   }
 
   cancelEUPOrder() {
-    const eupOrderInfo = this.props.accountLevelInEligibleDetails && this.props.accountLevelInEligibleDetails.toJS().accountLevelEUPInEligibleDetails;
+    const eupOrderInfo = this.props.accountLevelInEligibleDetails ? this.props.accountLevelInEligibleDetails.toJS().accountLevelEUPInEligibleDetails : (this.props.selectedMDN && { accountLevelInEligibleDetails: this.props.selectedMDN.inEligibleDetails });
     this.closeEUPPendingModal();
     this.props.cancelPendingOrder({ url: eupOrderInfo.accountLevelInEligibleDetails.cancelPlanChangeURL ? eupOrderInfo.accountLevelInEligibleDetails.cancelPlanChangeURL : this.props.selectedMDN.inEligibleDetails, selectedMTN: this.props.selectedMDN.mtn, orderType: 'EUP' });
     // this.setState({ isFetching: true });
@@ -204,7 +212,9 @@ export default class MDNSelection extends React.Component {
 
   showSummaryView(selectedMDN) {
     const mdnDetails = (typeof selectedMDN !== 'undefined' && selectedMDN != null) ? selectedMDN : this.props.mdnDetailsList.toJS().filter((mdn) => mdn.mtn === this.props.formData.toJS().chooseMDN.values.mdnSelection)[0];
-    if (mdnDetails.loanInfo) {
+    if (mdnDetails.annualUpgradeWarning) {
+      hashHistory.push(`/annualUpgrade?mdn=${mdnDetails.mtn}`);
+    } else if (mdnDetails.loanInfo) {
       // hashHistory.push(`/alwaysEligible?mdn=${mdnDetails.mtn}`);
       hashHistory.push(`/dppAgreement?mdn=${mdnDetails.mtn}`);
     } else if (mdnDetails.alwaysEligibleForUpgrade) {
@@ -218,7 +228,7 @@ export default class MDNSelection extends React.Component {
 
   render() {
     const {
-      changeSelectedTransferMDN, selectedMdnDetails, mdnDetailsList, changeMDNSelectionView, changeSelectedMDN, submitAgreement, cqJSON, ajaxCallSelectedMTN, getLoanInfoPreOrder, sharedCartInfo,
+      changeSelectedTransferMDN, selectedMDN, selectedMdnDetails, mdnDetailsList, changeMDNSelectionView, changeSelectedMDN, submitAgreement, cqJSON, ajaxCallSelectedMTN, getLoanInfoPreOrder, sharedCartInfo,
     } = this.props;
 
     if (!mdnDetailsList) {
@@ -261,8 +271,8 @@ export default class MDNSelection extends React.Component {
           style={{ width: '50%' }}
           showCloseX
         >
-          <h2>{cqJSON.label.DT_OD_MDN_EUP_PENDING_HEADER}</h2>
-          <p className="pad20 onlyTopPad fontSize_2">{cqJSON.label.DT_OD_MDN_EUP_PENDING_DESC}</p>
+          <h2>{this.props.accountLevelInEligibleDetails ? this.props.accountLevelInEligibleDetails.toJS().accountLevelEUPInEligibleDetails.accountLevelInEligibleDetails.title : (selectedMDN && selectedMDN.inEligibleDetails && selectedMDN.inEligibleDetails.title)}</h2>
+          <p className="pad20 onlyTopPad fontSize_2">{this.props.accountLevelInEligibleDetails ? this.props.accountLevelInEligibleDetails.toJS().accountLevelEUPInEligibleDetails.accountLevelInEligibleDetails.subTitle : (selectedMDN && selectedMDN.inEligibleDetails && selectedMDN.inEligibleDetails.subTitle)}</p>
           <Row className="pad20 noSidePad">
             <button className="button primary margin30 onlyRightMargin" onClick={this.cancelEUPOrder.bind(this)}>{cqJSON.label.DT_OD_MDN_EUP_PENDING_CANCEL_BUTTON}</button>
             <Anchor className="displayInlineBlock bold margin20 onlyTopMargin textDecUnderline" href="#" onClick={this.closeEUPPendingModal.bind(this)}>{cqJSON.label.DT_OD_MDN_EUP_PENDING_NO_THANKS}</Anchor>
@@ -280,43 +290,46 @@ export default class MDNSelection extends React.Component {
             </Col>
           </Row>
           {showNormal &&
-            <div className="border_grayThree noSideBorder noTopBorder noLeftBorder devicesRowWrap noBottomBorder pad36 onlyBottomPad" >
-              <Row className="">
-                <Col xs={8}>
-                  <h2 className="mdn_title_replace bold" style={{ fontSize: '24px' }} >{cqJSON.label.DT_OD_MDN_REPLACE_TITLE}</h2>
-                </Col>
-              </Row>
-              <hr style={{ border: '3px solid #000' }} />
-              {
-                mdnDetailsList.map((mdnDetails, idx) =>
-                  // const test = selectedMdnDetails.mdnList.indexOf(mdnDetails.toJS().mtn) > -1) ? "background_gray_one": "f"
-                  (mdnDetails.toJS().loanInfo === null && !Object.prototype.hasOwnProperty.call(selectedMdnDetails, 'checkState')) &&
-                    <Col xs={12} className="noLeftBorder deviceColItem relative" key={idx}>
-                      <MDNDetails
-                        selectedDevice={idx}
-                        mdnDetails={mdnDetails}
-                        changeMDNSelectionView={changeMDNSelectionView}
-                        changeSelectedMDN={changeSelectedMDN}
-                        onMTNUpgrade={submitAgreement}
-                        selectedMDN={this.props.selectedMDN}
-                        cqJSON={cqJSON}
-                        ajaxCallSelectedMTN={ajaxCallSelectedMTN}
-                        getLoanInfoPreOrder={getLoanInfoPreOrder}
-                        ajaxCallUrl={this.props.ajaxCallUrl}
-                        changeSelectedTransferMDN={changeSelectedTransferMDN}
-                        checked={selectedMdnDetails.mdnList.indexOf(mdnDetails.toJS().mtn) > -1}
-                        transferUpgrade={this.props.transferUpgrade && this.props.transferUpgrade.mtnDetailsList[idx]}
-                        transferTakerMTNs={this.props.transferUpgrade ? this.props.transferUpgrade.transferTakerMTNs : this.props.transferTakerMTNs && this.props.transferTakerMTNs.toJS()}
-                        selectedNumber={this.selectedNumber === mdnDetails.toJS().mtn}
-                        transferUpgradeCall={this.transferUpgradeCall}
-                        redoTransferMdn={this.redoTransferMdn}
-                        accountLevelInEligibleDetails={this.props.accountLevelInEligibleDetails && this.props.accountLevelInEligibleDetails.toJS()}
-                        hideNotification={this.props.hideNotification}
-                        cancelPendingOrder={this.props.cancelPendingOrder}
-                      />
-                      <hr style={{ border: '1px solid #ccc' }} />
-                    </Col>)
-              }
+            <div className="border_grayThree noSideBorder noTopBorder noLeftBorder devicesRowWrap noBottomBorder pad36 onlyBottomPad">
+              <fieldset style={{ border: 'none' }}>
+                <legend className="is-hidden">{cqJSON.label.DT_OD_MDN_REPLACE_TITLE}</legend>
+                <Row className="">
+                  <Col xs={8}>
+                    <h2 className="mdn_title_replace bold" style={{ fontSize: '24px' }} >{cqJSON.label.DT_OD_MDN_REPLACE_TITLE}</h2>
+                  </Col>
+                </Row>
+                <hr style={{ border: '3px solid #000' }} />
+                {
+                  mdnDetailsList.map((mdnDetails, idx) =>
+                    // const test = selectedMdnDetails.mdnList.indexOf(mdnDetails.toJS().mtn) > -1) ? "background_gray_one": "f"
+                    (mdnDetails.toJS().loanInfo === null && !Object.prototype.hasOwnProperty.call(selectedMdnDetails, 'checkState')) &&
+                      <Col xs={12} className="noLeftBorder deviceColItem relative" key={idx}>
+                        <MDNDetails
+                          selectedDevice={idx}
+                          mdnDetails={mdnDetails}
+                          changeMDNSelectionView={changeMDNSelectionView}
+                          changeSelectedMDN={changeSelectedMDN}
+                          onMTNUpgrade={submitAgreement}
+                          selectedMDN={this.props.selectedMDN}
+                          cqJSON={cqJSON}
+                          ajaxCallSelectedMTN={ajaxCallSelectedMTN}
+                          getLoanInfoPreOrder={getLoanInfoPreOrder}
+                          ajaxCallUrl={this.props.ajaxCallUrl}
+                          changeSelectedTransferMDN={changeSelectedTransferMDN}
+                          checked={selectedMdnDetails.mdnList.indexOf(mdnDetails.toJS().mtn) > -1}
+                          transferUpgrade={this.props.transferUpgrade && this.props.transferUpgrade.mtnDetailsList[idx]}
+                          transferTakerMTNs={this.props.transferUpgrade ? this.props.transferUpgrade.transferTakerMTNs : this.props.transferTakerMTNs && this.props.transferTakerMTNs.toJS()}
+                          selectedNumber={this.selectedNumber === mdnDetails.toJS().mtn}
+                          transferUpgradeCall={this.transferUpgradeCall}
+                          redoTransferMdn={this.redoTransferMdn}
+                          accountLevelInEligibleDetails={this.props.accountLevelInEligibleDetails && this.props.accountLevelInEligibleDetails.toJS()}
+                          hideNotification={this.props.hideNotification}
+                          cancelPendingOrder={this.props.cancelPendingOrder}
+                        />
+                        <hr style={{ border: '1px solid #ccc' }} />
+                      </Col>)
+                }
+              </fieldset>
             </div>
           }
           {showLoan &&

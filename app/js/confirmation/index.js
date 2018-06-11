@@ -7,6 +7,7 @@ import axios from 'axios';
 import configureStore from './../store';
 import provider from './../provider';
 import createRoutes from './routes';
+import * as reducers from './reducer';
 
 import '../../css/base/base.scss';
 import '../../css/base/fonts.scss';
@@ -21,7 +22,7 @@ import '../../css/states/states.scss';
 import '../../css/pages/confirmation/confirmation.scss';
 
 import cq from './../../cq/cq_confirmation.json';
-// import confirmation from './../../json/confirmation/updatedConfirmation'; // eslint-disable-line
+// import confirmation from './../../json/confirmation/updatedConfirmation';
 
 
 __webpack_public_path__ = window.resourceBaseUrl;
@@ -33,15 +34,19 @@ if (process.env.NODE_ENV !== 'production') {
 
 axios.get(__webpack_public_path__ + cq).then((result) => {
   const confirmationJSON = window.confirmationJSON && window.confirmationJSON.output ? window.confirmationJSON.output : {};
-  const cqJSON = result.data;
-
-  const confirmationView = {
-    ...confirmationJSON,
-    cqJSON,
+  const { billingInfo, devices, plans, selectedShippingType, shippingInfo, ...orderDetails } = confirmationJSON;
+  const initialState = {
+    billingInfo,
+    devices,
+    plans,
+    selectedShippingType,
+    shippingInfo,
+    orderDetails,
+    cqContent: result.data,
   };
 
   /* Creating the store with initial state */
-  const store = configureStore({ confirmationView });
+  const store = configureStore(initialState, reducers);
   injectTapEventPlugin(); // Instant TapEvents for React http://facebook.github.io/react/
   const render = () => {
     ReactDOM.render(

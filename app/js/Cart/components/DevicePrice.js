@@ -31,7 +31,6 @@ class DevicePriceWrapper extends Component {
       // asyncCallStatus,
     } = this.props;
     const { taxDetails, promotionList } = cartData;
-
     return (
       <section id="prices" className="costSummary_section pad18 onlyBottomPad">
         <div className="fontSize_5">
@@ -52,24 +51,26 @@ class DevicePriceWrapper extends Component {
               </Row>
             </section>
           }
-          <section className="section group">
-            {!isEnterZipDisplay && taxDetails &&
-              <Row className="clearfix margin12 onlyTopMargin">
-                <Col className="floatLeft textLeft" md={9} lg={9}>
-                  <div className="nowrap bold">
-                    {cq.label.DT_OD_CART_DUE_TODAY_EST_GOV_SALES_TAX}
-                  </div>
-                  <div>
-                    <p className="fontSize_4">for&nbsp;<span>{taxDetails.cityStateString}</span>
-                      <EditButton onClick={this.onChangeLocation} />
-                    </p>
-                  </div>
-                </Col>
-                <Col className="floatRight textRight" id="estimateTax" md={3} lg={3}><div id="taxPrice">${taxDetails.taxPrice}</div></Col>
-              </Row>
-            }
-            {isEnterZipDisplay && <CartZipCode />}
-          </section>
+          {!cartData.accGuestCheckoutEnabled &&
+            <section className="section group">
+              {!isEnterZipDisplay && taxDetails &&
+                <Row className="clearfix margin12 onlyTopMargin">
+                  <Col className="floatLeft textLeft" md={9} lg={9}>
+                    <div className="nowrap bold">
+                      {cq.label.DT_OD_CART_DUE_TODAY_EST_GOV_SALES_TAX}
+                    </div>
+                    <div>
+                      <p className="fontSize_4">for&nbsp;<span>{taxDetails.cityStateString}</span>
+                        <EditButton onClick={this.onChangeLocation} />
+                      </p>
+                    </div>
+                  </Col>
+                  <Col className="floatRight textRight" id="estimateTax" md={3} lg={3}><div id="taxPrice">${taxDetails.taxPrice}</div></Col>
+                </Row>
+              }
+              {isEnterZipDisplay && <CartZipCode />}
+            </section>
+          }
           {cartData.ecpdDueTodayDiscountedAmount > 0 &&
             <section className="section group">
               <Row className="clearfix margin12 onlyTopMargin">
@@ -129,11 +130,11 @@ class DevicePriceWrapper extends Component {
           {cartData.totalDueToday &&
             <DueItemList label={cq.label.DT_OD_CART_DUE_TODAY_TITLE} amount={cartData.totalDueToday} />
           }
-          {cartData.overallDueMonthly ?
+          {cartData.overallDueMonthly && (!cartData.standaloneAccessories && !cartData.accGuestCheckoutEnabled) ?
             <DueItemList label={cq.label.DT_OD_CART_DUE_MONTHLY_TITLE} amount={cartData.overallDueMonthly} />
             :
             <section className="section group">
-              {cartData.totalDueMonthly &&
+              {cartData.totalDueMonthly && (!cartData.standaloneAccessories && !cartData.accGuestCheckoutEnabled) &&
                 <DueItemList label={cq.label.DT_OD_CART_DUE_DEVICE_MONTHLY_TITLE} amount={cartData.totalDueMonthly} />
               }
               {cartData.plans && cpc &&
@@ -141,28 +142,32 @@ class DevicePriceWrapper extends Component {
               }
             </section>
           }
-          <Row>
-            <Col
-              xs={1}
-              style={{ marginRight: '-8px' }}
-            >
-              *
-            </Col>
-            <Col xs={10}>
-              <div className="finePrint fontSize_2">{cq.html.DT_OD_CART_ESTIMTD_TAX_TIP}</div>
-            </Col>
-          </Row>
-          <Row>
-            <Col
-              xs={1}
-              style={{ marginRight: '-8px' }}
-            >
-              *
-            </Col>
-            <Col xs={10}>
-              <div className="finePrint arial fontSize_2">{cq.label.DT_OD_CART_BILL_NOTE_TITLE}</div>
-            </Col>
-          </Row>
+          {(!cartData.standaloneAccessories && !cartData.accGuestCheckoutEnabled) &&
+            <div>
+              <Row>
+                <Col
+                  xs={1}
+                  style={{ marginRight: '-8px' }}
+                >
+                  *
+                </Col>
+                <Col xs={10}>
+                  <div className="finePrint fontSize_2">{cq.html.DT_OD_CART_ESTIMTD_TAX_TIP}</div>
+                </Col>
+              </Row>
+              <Row>
+                <Col
+                  xs={1}
+                  style={{ marginRight: '-8px' }}
+                >
+                  *
+                </Col>
+                <Col xs={10}>
+                  <div className="finePrint arial fontSize_2">{cq.label.DT_OD_CART_BILL_NOTE_TITLE}</div>
+                </Col>
+              </Row>
+            </div>
+          }
         </div>
       </section>
     );

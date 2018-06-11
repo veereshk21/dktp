@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { reduxForm } from 'redux-form/immutable';
-import RadioButton from '../../../common/RadioButton/index';
 import Button from '../../../common/Button/Button';
-import { EDIT_STATE, NOTIFICATIONS } from '../../constants';
+import { EDIT_STATE } from '../../constants';
 import * as validation from '../../../common/validation';
 import AsyncComponent from '../../../common/AsyncComponent';
 
-const Modal = AsyncComponent(() => import('../../../common/Modal'));
-const InStorePickUp = AsyncComponent(() => import('../../containers/ispu'));
 const ShippingAddressForm = AsyncComponent(() => import('./shippingAddressForm'));
-const SecurePin = AsyncComponent(() => import('../securePin'));
 
 const validate = (values, props) => {
   const errors = {};
@@ -28,19 +24,19 @@ const validate = (values, props) => {
   if (props.formValues.shipToType === 'business') {
     if (!businessName) {
       errors.businessName = props.cqContent.error.DT_OD_CHECKOUT_FORM_FIELD_REQUIRED_TEXT;
-    } else if (!validation.isValidName(businessName)) {
+    } else if (!validation.isValidNameWithSpace(businessName)) {
       errors.businessName = props.cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_INVALID_COMPANY_NAME_ERROR;
     }
   }
 
   if (!firstName) {
     errors.firstName = props.cqContent.error.DT_OD_CHECKOUT_FORM_FIELD_REQUIRED_TEXT;
-  } else if (!validation.isValidName(firstName)) {
+  } else if (!validation.isValidNameWithSpace(firstName)) {
     errors.firstName = props.cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_INVALID_FIRST_NAME_ERROR;
   }
   if (!lastName) {
     errors.lastName = props.cqContent.error.DT_OD_CHECKOUT_FORM_FIELD_REQUIRED_TEXT;
-  } else if (!validation.isValidName(lastName)) {
+  } else if (!validation.isValidNameWithSpace(lastName)) {
     errors.lastName = props.cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_INVALID_LAST_NAME_ERROR;
   }
   if (!shippingAddress) {
@@ -80,73 +76,25 @@ const validate = (values, props) => {
 };
 
 class ShippingAddressEdit extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showSecurePin: false,
-      deviceDetails: [],
-      orderID: '',
-      ispuModalVisible: false,
-    };
-  }
   componentDidMount = () => {
-    if (this.props.shippingAddressChangeRequired) {
-      this.props.showErrorNotification(this.props.cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_UPDATE_REQUIRED_ERROR, NOTIFICATIONS.SHIPPING);
-      this.props.touch('phoneNumber');
-      this.props.touch('email');
-    }
-  }
-  componentWillReceiveProps = (nextProps) => {
-    if (nextProps.formValues.shippingAddressType !== this.props.formValues.shippingAddressType) {
-      if (nextProps.formValues.shippingAddressType === 'ISPU') {
-        if (nextProps.ispuChangeToShip) {
-          this.props.changeForm('ispuContactInfo', 'shippingAddressType', 'ISPU');
-        } else {
-          this.showIspuModal();
-        }
-      } else {
-        // SWITCHING FROM ISPU? NOT SURE WHAT GOES HERE
+    const { addressInfo, showErrorNotification, cqContent, touch } = this.props;
+
+    if (this.props.checkoutStates.contactInfoRequired) {
+      touch('phoneNumber');
+      touch('email');
+
+      if (!addressInfo.email && !addressInfo.phoneNumber) {
+        showErrorNotification(cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_INVALID_EMAIL_AND_PHONE_NUMBER_ERROR);
+      } else if (!addressInfo.email) {
+        showErrorNotification(cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_INVALID_EMAIL_ERROR);
+      } else if (!addressInfo.phoneNumber) {
+        showErrorNotification(cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_INVALID_PHONE_NUMBER_ERROR);
       }
-    }
-    if (nextProps.asyncCallStatus.data.smsDevicesFetched) {
-      this.setState({
-        showSecurePin: true,
-        deviceDetails: nextProps.asyncCallStatus.data.output.deviceDetails,
-        orderID: nextProps.asyncCallStatus.data.output.orderID,
-      });
-      this.props.invalidateAsyncFetch();
     }
   }
 
   onCancel = () => {
     this.props.updateEditState(EDIT_STATE.SHIPPING, false);
-  }
-
-  showIspuModal = () => {
-    this.setState({ ispuModalVisible: true });
-  }
-
-  closeIspuModal = () => {
-    this.setState({ ispuModalVisible: false });
-    this.props.change('shippingAddressType', 'shipToMe');
-  }
-  ispuSuccessful = () => {
-    this.setState({ ispuModalVisible: false });
-  }
-
-  closeSecurePinModal = () => {
-    this.props.change('sameAsBilling', true);
-    this.setState({ showSecurePin: false });
-  }
-
-  securePinSuccess = () => {
-    this.props.change('sameAsBilling', false);
-    this.setState({ showSecurePin: false });
-  }
-
-  notifySecurePinIneligible = () => {
-    const { cqContent } = this.props;
-    this.props.showErrorNotification(cqContent.error.DT_OD_CHECKOUT_ADDRESS_UPDATE_PROMPT_TEXT, NOTIFICATIONS.SHIPPING);
   }
   submitShippingInfo = (data) => {
     const { cqContent } = this.props;
@@ -154,83 +102,28 @@ class ShippingAddressEdit extends Component {
   }
   render() {
     const {
-      cqContent, handleSubmit, valid, submitting, formValues, shippingAddressRequired, shippingAddressChangeRequired, loginMTN,
+      cqContent, handleSubmit, valid, submitting, formValues, checkoutStates, addressInfo,
     } = this.props;
     const isBuisnessAddress = formValues.shipToType === 'business';
+
+    let ctaText = cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_BUTTON_TEXT;
+    if (checkoutStates.contactInfoRequired) {
+      if (!addressInfo.email && !addressInfo.phoneNumber) {
+        ctaText = cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_BUTTON_TEXT;
+      } else if (!addressInfo.email) {
+        ctaText = cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_MISSING_EMAIL_BUTTON_TEXT;
+      } else if (!addressInfo.phoneNumber) {
+        ctaText = cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_MISSING_PHONE_NUMBER_BUTTON_TEXT;
+      }
+    }
+
     return (
       <div>
-        {this.state.ispuModalVisible &&
-          <Modal
-            mounted
-            closeFn={this.closeIspuModal}
-            showCloseX
-            underlayColor="rgba(0,0,0,0.8)"
-          >
-            <InStorePickUp
-              closeModal={this.ispuSuccessful}
-            />
-          </Modal>
-        }
-        {this.state.showSecurePin &&
-          <Modal
-            mounted
-            closeFn={this.closeSecurePinModal}
-            underlayColor="rgba(0,0,0,0.8)"
-          >
-            <SecurePin
-              deviceDetails={this.state.deviceDetails}
-              orderID={this.state.orderID}
-              closeModal={this.closeSecurePinModal}
-              initialValues={{ smsDevice: loginMTN }}
-              cqContent={cqContent}
-              sendSMS={this.props.sendSMS}
-              validateAuthCode={this.props.validateAuthCode}
-              asyncCallStatus={this.props.asyncCallStatus}
-              invalidateAsyncFetch={this.props.invalidateAsyncFetch}
-              securePinSuccess={this.securePinSuccess}
-            />
-          </Modal>
-        }
-        {this.props.ispuEligibleFlag &&
-          <div className="margin12 onlyBottomMargin">
-            <div className="pad6 noSidePad">
-              <RadioButton
-                name="shippingAddressType"
-                id="shippingAddressTypeShipToMe"
-                value="shipToMe"
-                containerClassName=" "
-                labelClassName="verticalCenter pad12 onlyLeftPad"
-              >
-                <p>{cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_SHIP_TO_ADDRESS}</p>
-              </RadioButton>
-            </div>
-            <div className="pad6 noSidePad">
-
-              <RadioButton
-                name="shippingAddressType"
-                id="shippingAddressTypeISPU"
-                value="ISPU"
-                containerClassName=" "
-                labelClassName="verticalCenter pad12 onlyLeftPad"
-              >
-                <p>{cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_PICK_UP_STORE}</p>
-              </RadioButton>
-            </div>
-          </div>
-        }
         <ShippingAddressForm
           {...this.props}
           isBuisnessAddress={isBuisnessAddress}
         />
-        <div className="width100 margin24 onlyTopMargin clearfix">
-          {!(shippingAddressRequired || shippingAddressChangeRequired) &&
-            <button
-              className="fontSize_3 link background_transparent displayInlineBlock margin15 borderSize_0"
-              onClick={this.onCancel}
-            >
-              {cqContent.label.DT_OD_CHECKOUT_PAYMENT_CANCEL}
-            </button>
-          }
+        <div className="width100 margin24 noSideMargin clearfix">
           <Button
             className="primary button large"
             type="submit"
@@ -241,8 +134,17 @@ class ShippingAddressEdit extends Component {
               })
             }
           >
-            {cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_BUTTON_TEXT}
+            {ctaText}
           </Button>
+
+          {!(checkoutStates.shippingAddressRequired || checkoutStates.shippingAddressChangeRequired || checkoutStates.poBoxShippingAddress || checkoutStates.shippingAddressValidationError) &&
+            <Button
+              className="secondary button large margin10 onlyLeftMargin"
+              onClick={this.onCancel}
+            >
+              {cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_CANCEL}
+            </Button>
+          }
 
         </div>
       </div >
@@ -253,25 +155,15 @@ class ShippingAddressEdit extends Component {
 ShippingAddressEdit.propTypes = {
   handleSubmit: PropTypes.func,
   cqContent: PropTypes.object,
-  // formEnabled: PropTypes.bool,
   valid: PropTypes.bool,
   submitting: PropTypes.bool,
-  shippingAddressRequired: PropTypes.bool,
-  shippingAddressChangeRequired: PropTypes.bool,
   showErrorNotification: PropTypes.func,
-  updateShippingAddress: PropTypes.func,
   touch: PropTypes.func,
   formValues: PropTypes.object,
   updateEditState: PropTypes.func,
-  loginMTN: PropTypes.string,
-  sendSMS: PropTypes.func,
-  validateAuthCode: PropTypes.func,
-  asyncCallStatus: PropTypes.object,
-  change: PropTypes.func,
-  invalidateAsyncFetch: PropTypes.func,
-  ispuEligibleFlag: PropTypes.bool,
-  // ispuChangeToShip: PropTypes.bool,
-  changeForm: PropTypes.func,
+  addressInfo: PropTypes.object,
+  checkoutStates: PropTypes.object,
+  updateShippingAddress: PropTypes.func,
 };
 export default reduxForm({
   form: 'shippingAddress',

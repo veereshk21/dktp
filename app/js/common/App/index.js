@@ -17,12 +17,13 @@
 
 import { connect } from 'react-redux';
 import { Route, Switch, withRouter } from 'react-router-dom';
+import * as _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-
+import Sticky from 'react-stickynode';
+import MyOffersBanner from './../MyOfferBanner/index';
 import NotificationBar from '../NotificationBar';
 import ScrollToTop from './ScrollToTop';
-
 
 const App = (props) => {
   const footer = document.getElementById('vzw-gf');
@@ -31,7 +32,16 @@ const App = (props) => {
   // const topHeight = (window.myOffersBannerJSON && !_.isEmpty(window.myOffersBannerJSON) && props.isNotificationVisible) ? gnHeight + 144 : ((window.myOffersBannerJSON && !_.isEmpty(window.myOffersBannerJSON)) ? 42 : ((props.isNotificationVisible) ? gnHeight + 102 : 0));
   return (
     <div className="grid">
-      {<NotificationBar page={props.location} section="page-header" />}
+      {(window.myOffersBannerJSON && !_.isEmpty(window.myOffersBannerJSON)) &&
+        <MyOffersBanner />
+      }
+      <Sticky
+        bottomBoundary="#app"
+        innerZ="99999999999"
+      >
+        <NotificationBar page={props.location} section="page-header" />
+      </Sticky>
+
       <main
         id="page-wrap"
         role="main"

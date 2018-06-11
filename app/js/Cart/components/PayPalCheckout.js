@@ -23,13 +23,12 @@ class PayPalWrapper extends Component {
   _onCheckout(paypalEnabled, event) {
     event.preventDefault();
     // TODO: This is the logic for guest checkout
-    // const { authenticated, standaloneAccessories, guestCheckoutSignInURL } = this.props;
-    // if (standaloneAccessories && !authenticated) {
-    //   window.location.href = guestCheckoutSignInURL;
-    // } else {
-    //   this.props.initiateCheckout(paypalEnabled);
-    // }
-    this.props.initiateCheckout(paypalEnabled);
+    const { authenticated, standaloneAccessories, guestCheckoutSignInURL, accGuestCheckoutEnabled } = this.props;
+    if (standaloneAccessories && !authenticated && accGuestCheckoutEnabled) {
+      window.location.href = guestCheckoutSignInURL;
+    } else {
+      this.props.initiateCheckout(paypalEnabled);
+    }
   }
 
   _onEmailCart(event) { // Email Cart
@@ -107,9 +106,10 @@ PayPalWrapper.propTypes = {
   emailResponse: PropTypes.object,
   initiateCheckout: PropTypes.func,
   cartData: PropTypes.object,
-  // authenticated: PropTypes.bool,
-  // standaloneAccessories: PropTypes.bool,
-  // guestCheckoutSignInURL: PropTypes.string,
+  authenticated: PropTypes.bool,
+  standaloneAccessories: PropTypes.bool,
+  guestCheckoutSignInURL: PropTypes.string,
+  accGuestCheckoutEnabled: PropTypes.bool,
 };
 
 export default PayPalWrapper;

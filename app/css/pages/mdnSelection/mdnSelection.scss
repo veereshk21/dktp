@@ -35,3 +35,7 @@ $black:  black;
 .deviceRow_img {
 	max-height: 150px;
 }
+
+[name="mdnSelection"].radioBtn:checked + label:before{
+    outline:1px dotted;
+}

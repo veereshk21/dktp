@@ -15,6 +15,7 @@ export const API_FAILURE_CODE = '01';
 export const BILL_TO_ACCOUNT = 'BTA';
 export const APPLE_PAY = 'APPLE_PAY';
 
+
 // TODO: Remove this AJAX URL and get from JSON
 export const PAYPAL_CMPI_LOOKUP_URL = '/od/cust/auth/checkout/paypal/cmpilookup?triggerFrom=PAYMENT';
 
@@ -40,4 +41,6 @@ export const NOTIFICATIONS = {
   ISPU: 'ispu-modal',
 };
 
-export const CYBER_SOURCE_DATA = 'CYBER_SOURCE_DATA';
+// fetch state and city
+export const FETCH_ZIPCODE_INFO = 'FETCH_ZIPCODE_INFO';
+export const RESET_ZIPCODE_INFO = 'RESET_ZIPCODE_INFO';

@@ -29,10 +29,6 @@ export default class DeviceProtectionDetails extends Component {
         <div className="pad12 onlyTopPad">
           <div className="protectionTcWrap pad12 onlySidePad">
             <div className="pad12">
-      		  {/* <h4
-                className="clearLeft fontSize_7  margin15 onlyBottomMargin bold"
-              >{cqLabel.DT_OD_DEVICE_PROTECTION_MORE_DETAILS_HEADER}
-              </h4>*/ }
               <div dangerouslySetInnerHTML={{ __html: cqHTML.DT_OD_DEVICE_PROTECTION_MODAL_HTML }} />
             </div>
           </div>

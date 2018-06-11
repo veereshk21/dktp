@@ -1,7 +1,7 @@
 import { Grid, Row, Col } from 'react-flexbox-grid';
-import { hashHistory } from 'react-router';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { hashHistory } from './../../store';
 
 import * as Constants from '../constants';
 // import Button from '../../common/Button/Button';
@@ -57,7 +57,7 @@ export default class AnnualUpgrade extends Component {
     }
     const { selectedMDN } = this.props;
     return (
-      <section className="section group grid">
+      <section className="section group grid vh70 pad20 onlySidePad">
         <Grid fluid>
           <Row>
             <Col xsOffset={9} xs={3}>
@@ -66,23 +66,19 @@ export default class AnnualUpgrade extends Component {
           </Row>
           <Row>
             <Col sm={4} md={4} lg={4}>
-              <div className="section group border_CC noRightBorder background_gray_one min-height500">
-                <Row className="min-height500 justifyContentCenter pad36 onlyTopPad" center="xs">
-                  <Col xs={12}>
-                    <div>
-                      <div className="margin5 onlyBottomMargin">
-                        <Row className="fontSize_5 bold justifyContentCenter">
-                          {selectedMDN.nickname}&apos;s <span className="pad5 onlyLeftPad" dangerouslySetInnerHTML={{ __html: selectedMDN.displayDeviceName }} />
-                        </Row>
-                        <Row className="pad10 onlyBottomPad fontSize_4 justifyContentCenter">
-                          <span className="pad5 block onlyTopPad">{selectedMDN.displayMtn}</span>
-                        </Row>
-                      </div>
-
-                      <div>
-                        <img src={(selectedMDN.imageUrl !== null) ? `${selectedMDN.imageUrl}&wid=165&hei=300` : deviceImgNA} alt="Selected Device" className={(selectedMDN.imageUrl === null) ? 'mtnDefaultImg' : ''} />
-                      </div>
+              <div className="section group min-height500">
+                <Row className="pad36 onlyTopPad height100" center="xs">
+                  <Col xs={12} className="height100">
+                    <div className="margin5 onlyBottomMargin">
+                      <Row className="fontSize_5 bold">
+                        {selectedMDN.nickname}&apos;s <span dangerouslySetInnerHTML={{ __html: selectedMDN.displayDeviceName }} />
+                      </Row>
+                      <Row className="pad10 onlyBottomPad fontSize_4">
+                        <span className="pad5 block onlyTopPad">{selectedMDN.displayMtn}</span>
+                      </Row>
                     </div>
+
+                    <img src={(selectedMDN.imageUrl !== null) ? `${selectedMDN.imageUrl}&wid=165&hei=300` : deviceImgNA} style={{ maxHeight: '300px' }} alt="Selected Device" className={(selectedMDN.imageUrl === null) ? 'mtnDefaultImg maxWidth100 height100' : 'maxWidth100 height100'} />
                   </Col>
                 </Row>
               </div>
@@ -91,12 +87,12 @@ export default class AnnualUpgrade extends Component {
               <div>
                 <Row className="pad24 margin36 onlyTopMargin clearfix noTopPad">
                   <Col xs={12} className="">
-                    <h1 className="fontSize_8 color_orange">{selectedMDN.annualUpgradeMessage.title}</h1>
-                    <p className="fontSize_6 bold margin10 onlyTopMargin">{selectedMDN.annualUpgradeMessage.subTitle}</p>
-                    <div className="margin48 onlyTopMargin textAlignCenter">
+                    <p className="fontSize_10 bold">{selectedMDN.annualUpgradeMessage.title}</p>
+                    <p className="fontSize_4 margin10 onlyTopMargin">{selectedMDN.annualUpgradeMessage.subTitle}</p>
+                    <div className="margin48 onlyTopMargin">
                       <Button
                         className="button secondary large margin12 onlyRightMargin"
-                        onClick={this.onCancelClick}
+                        onClick={this.onCancelClick.bind(this)}
                       >{selectedMDN.annualUpgradeMessage.cancelButtonText}
                       </Button>
                       <Button

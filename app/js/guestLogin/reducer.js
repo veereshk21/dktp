@@ -1,3 +1,4 @@
+import { fromJS } from 'immutable';
 
 import {
   ASYNC_FETCH,
@@ -24,3 +25,19 @@ export const asyncCallStatus = (state = { isFetching: false, error: false, data:
       return state;
   }
 };
+export const guestLoginDetails = (state = {}, action) => {
+  switch (action.type) {
+    default:
+      return state;
+    // return state;
+  }
+};
+
+export const cqContent = (state = {}, action) => {
+  const immutableCQContent = fromJS({ label: {}, error: {}, html: {} });
+  switch (action.type) {
+    default:
+      return immutableCQContent.mergeDeep(state);
+  }
+};
+

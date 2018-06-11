@@ -6,6 +6,7 @@ import { renderTextField } from '../../../common/TextField/';
 import MSelect from '../../../common/Select/index';
 import Checkbox from '../../../common/Checkbox/index';
 import * as validation from '../../../common/validation';
+import ToolTip from '../../../common/ToolTip/index';
 
 
 const validate = (values, props) => {
@@ -24,12 +25,12 @@ const validate = (values, props) => {
   // Validation for different Service Address
   if (!firstName) {
     errors.firstNameServAddress = props.cqContent.error.DT_OD_CHECKOUT_FORM_FIELD_REQUIRED_TEXT;
-  } else if (!validation.isValidName(firstName)) {
+  } else if (!validation.isValidNameWithSpace(firstName)) {
     errors.firstNameServAddress = props.cqContent.error.DT_OD_CHECKOUT_SERVICE_ADDRESS_INVALID_FIRST_NAME_ERROR;
   }
   if (!lastName) {
     errors.lastNameServAddress = props.cqContent.error.DT_OD_CHECKOUT_FORM_FIELD_REQUIRED_TEXT;
-  } else if (!validation.isValidName(lastName)) {
+  } else if (!validation.isValidNameWithSpace(lastName)) {
     errors.lastNameServAddress = props.cqContent.error.DT_OD_CHECKOUT_SERVICE_ADDRESS_INVALID_LAST_NAME_ERROR;
   }
   if (!address) {
@@ -94,9 +95,17 @@ class ServiceAddressEdit extends Component {
 
     return (
       <div>
-        <p className="bold fontSize_5">
-          {cqContent.label.DT_OD_CHECKOUT_DEVICES_HEADER_SERVICE_ADDRESS}
-        </p>
+        <div>
+          <h3 className="displayInlineBlock">
+            {cqContent.label.DT_OD_CHECKOUT_DEVICES_HEADER_SERVICE_ADDRESS}
+          </h3>
+          <ToolTip
+            className="margin3 onlyLeftMargin displayInlineBlock"
+            ariaLabel="Billing address information tooltip"
+            text={cqContent.label.DT_OD_CHECKOUT_DEVICES_HEADER_SERVICE_ADDRESS_TOOLTIP}
+            noRenderHTML
+          />
+        </div>
         <div>
           <Checkbox
             className="checkbox"
@@ -181,6 +190,7 @@ class ServiceAddressEdit extends Component {
                 borderStyle
                 required
               >
+                <option disabled value="" />
                 {states.map((state) => (
                   <option key={state} value={state}>{state}</option>
                 ))}
@@ -193,6 +203,7 @@ class ServiceAddressEdit extends Component {
                 name="phoneNumberServAddress"
                 label={cqContent.label.DT_OD_CHECKOUT_SERVICE_ADDRESS_PHONE_NUMBER_TEXT}
                 type="text"
+                maxLength="10"
                 required
               />
             </Col>

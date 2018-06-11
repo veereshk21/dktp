@@ -121,7 +121,9 @@ class DeviceEdit extends Component {
   }
 
   closeTransferModal = () => {
-    if (!this.state.editTransfer) {
+    const { npaNxxdetails } = this.props;
+
+    if (!this.state.editTransfer && ((npaNxxdetails && npaNxxdetails.mtns && npaNxxdetails.mtns.length > 0) || this.props.device.npaNxxnumber)) {
       this.props.change('npnxx', 'default');
     }
     this.setState({
@@ -165,10 +167,10 @@ class DeviceEdit extends Component {
           <Col xs={9} lg={10} className="noPad">
             <Row>
               {(device.flow === 'AAL' || device.flow === 'NSO') &&
-                <Col xs={6} className="border_grayThree onlyRightBorder" style={{ paddingRight: 18 }}>
-                  <p className="bold fontSize_5">
-                    {index + 1}. <span dangerouslySetInnerHTML={{ __html: device.deviceName }} />
-                  </p>
+                <Col xs={6}>
+                  <h3>
+                    {index + 1}. <span dangerouslySetInnerHTML={{ __html: device.manufactureName }} /> <span dangerouslySetInnerHTML={{ __html: device.deviceName }} />
+                  </h3>
                   <div className="margin6 noSideMargin">
                     <p className="bold fontSize_5 margin6 noSideMargin radioLabel">
                       {cqContent.label.DT_OD_CHECKOUT_NPNXX_TITLE}
@@ -215,6 +217,7 @@ class DeviceEdit extends Component {
                             name="numberZipCode"
                             label={cqContent.label.DT_OD_CHECKOUT_NPNXX_ZIPCODE_FIELD}
                             type="text"
+                            normalize={validation.normalizeZipCode}
                             required
                           />
                         </div>
@@ -240,7 +243,7 @@ class DeviceEdit extends Component {
                       </div>
                     }
                     {((npaNxxdetails && npaNxxdetails.mtns && npaNxxdetails.mtns.length > 0) || device.npaNxxnumber) &&
-                      < RadioButton
+                      <RadioButton
                         name="npnxx"
                         id="default"
                         value="default"
@@ -266,7 +269,7 @@ class DeviceEdit extends Component {
                   </Modal>
                 </Col>
               }
-              <Col xs={(device.flow === 'AAL' || device.flow === 'NSO') ? 6 : 12} style={{ paddingLeft: (device.flow === 'AAL' || device.flow === 'NSO') ? 18 : 8 }}>
+              <Col xs={(device.flow === 'AAL' || device.flow === 'NSO') ? 6 : 12}>
                 <ServiceAddressEdit
                   device={device}
                   setIsAddressUpdated={this.setIsAddressUpdated}
@@ -289,14 +292,6 @@ class DeviceEdit extends Component {
           </Col>
         </Row>
         <div className={`width100 pad24 clearfix ${index > 0 ? 'onlyTopPad' : 'noSidePad border_grayThree onlyBottomBorder'}`}>
-          {!this.props.required &&
-            <button
-              className="fontSize_3 link background_transparent displayInlineBlock margin15 borderSize_0"
-              onClick={() => setEditState(index, false)}
-            >
-              {cqContent.label.DT_OD_CHECKOUT_PAYMENT_CANCEL}
-            </button>
-          }
           <button
             className="primary button large"
             type="submit"
@@ -309,6 +304,15 @@ class DeviceEdit extends Component {
           >
             {cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_BUTTON_TEXT}
           </button>
+
+          {!this.props.required &&
+            <button
+              className="secondary button large margin10 onlyLeftMargin"
+              onClick={() => setEditState(index, false)}
+            >
+              {cqContent.label.DT_OD_CHECKOUT_DEVICES_CANCEL}
+            </button>
+          }
 
         </div>
       </div>

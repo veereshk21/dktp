@@ -124,6 +124,7 @@ class InStorePickUp extends Component {
     param.standaloneAccessories = this.props.standaloneAccessories;
     param.longitude = store.longitude;
     param.latitude = store.latitude;
+    param.shipOptionChangeOnly = true;
     // if (tradeIn && tradeInAddress) {
     //   param.ispuLastName = tradeInAddress.lastName;
     //   param.ispuFirstName = tradeInAddress.firstName;
@@ -186,7 +187,7 @@ class InStorePickUp extends Component {
                 name="zipCode"
                 normalize={validation.allowOnlyNumbers}
                 maxLength="10"
-                label="Search for a Store"
+                label="Enter ZIP code"
                 type="text"
                 required
               //  disabled={!!this.props.selectValue(`balance_${index + 1}`)}
@@ -256,7 +257,7 @@ class InStorePickUp extends Component {
                   name="zipCode"
                   normalize={validation.allowOnlyNumbers}
                   maxLength="10"
-                  label="Search for a Store"
+                  label="Enter ZIP code"
                   type="text"
                   required
                 //  disabled={!!this.props.selectValue(`balance_${index + 1}`)}

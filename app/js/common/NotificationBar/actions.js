@@ -1,4 +1,7 @@
 /* eslint-disable arrow-body-style */
+
+import { NOTIFICATION_ERROR_CSS_CLASS, NOTIFICATION_WARNING_CSS_CLASS, NOTIFICATION_SUCCESS_CSS_CLASS, NOTIFICATION_INFO_CSS_CLASS } from './../Constants';
+
 export const hideNotification = () => {
   return {
     type: 'common/HIDE_NOTIFICATION',
@@ -9,7 +12,7 @@ export const hideNotification = () => {
 export const showErrorNotification = (message, section) => {
   return {
     type: 'common/SHOW_NOTIFICATION',
-    data: Object.assign({}, { message, section, type: 'error' }),
+    data: Object.assign({}, { message, section, type: NOTIFICATION_ERROR_CSS_CLASS }),
   };
 };
 
@@ -17,7 +20,21 @@ export const showErrorNotification = (message, section) => {
 export const showInfoNotification = (message, section) => {
   return {
     type: 'common/SHOW_NOTIFICATION',
-    data: Object.assign({}, { message, section, type: 'info' }),
+    data: Object.assign({}, { message, section, type: NOTIFICATION_INFO_CSS_CLASS }),
+  };
+};
+
+export const showWarningNotification = (message, section) => {
+  return {
+    type: 'common/SHOW_NOTIFICATION',
+    data: Object.assign({}, { message, section, type: NOTIFICATION_WARNING_CSS_CLASS }),
+  };
+};
+
+export const showSuccessNotification = (message, section) => {
+  return {
+    type: 'common/SHOW_NOTIFICATION',
+    data: Object.assign({}, { message, section, type: NOTIFICATION_SUCCESS_CSS_CLASS }),
   };
 };
 
@@ -32,5 +49,12 @@ export const checkNotification = (pageName) => {
   return {
     type: 'common/CHECK_NOTIFICATION',
     data: Object.assign({}, { pageName }),
+  };
+};
+
+export const setHeight = (height) => {
+  return {
+    type: 'common/SET_HEIGHT',
+    data: { height },
   };
 };

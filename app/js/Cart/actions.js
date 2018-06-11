@@ -2,7 +2,7 @@ import axios from 'axios';
 import { hashHistory } from './../store';
 import * as cartConstants from './constants';
 import { showErrorNotification, hideNotification } from './../common/NotificationBar/actions';
-import { getErrorMap } from './../common/Helpers';
+import { getErrorMap, updateCartCount } from './../common/Helpers';
 
 /* import {
  API_SUCCESS_CODE,
@@ -224,7 +224,7 @@ export const changeZipCodeSuccess = (responseData) => ({
   data: responseData,
 });
 
-export const callCheckoutAPI = (url) => axios.post(url);
+export const initiateCheckoutAPI = (url) => axios.post(url);
 
 const updatePaypalPaymentInfoAPI = (url) => axios.post(url);
 
@@ -235,15 +235,20 @@ export const initiateCheckout = (paypalEnabled, masterpassEnabled, masterPassErr
   const paypalApi = state.get('cartData').get('output').get('paypalApi');
   const masterpassConfigInfo = state.get('cartData').get('output').get('masterpassConfigInfo');
   const masterPassConfigData = masterpassConfigInfo && masterpassConfigInfo.toJS();
-  callCheckoutAPI(url).then((response) => {
-    if (response.data.output !== null && typeof response.data.output.goToSuccessURL !== typeof undefined) {
+  initiateCheckoutAPI(url).then((response) => {
+    const goToSuccessURL = response.data.output && response.data.output.goToSuccessURL;
+    if (response.data.statusCode !== cartConstants.API_SUCCESS_CODE && (typeof goToSuccessURL !== typeof undefined && goToSuccessURL !== null)) {
+      window.location.href = goToSuccessURL;
+    } else if (response.data.statusCode === cartConstants.API_SUCCESS_CODE) {
+      dispatch(asyncFetch());
       if (paypalEnabled === true) {
-        updatePaypalPaymentInfoAPI(paypalApi).then((resp) => {
-          if (resp.data.statusCode === cartConstants.API_SUCCESS_CODE) {
-            window.location.href = resp.data.output;
+        updatePaypalPaymentInfoAPI(paypalApi).then((payPalResp) => {
+          if (payPalResp.data.statusCode === cartConstants.API_SUCCESS_CODE) {
+            window.location.href = payPalResp.data.output;
           } else {
-            dispatch(showErrorNotification(getErrorMap(resp.data.errorMap)));
+            dispatch(showErrorNotification(getErrorMap(payPalResp.data.errorMap)));
           }
+          dispatch(asyncFetchSuccess());
         }).catch((err) => {
           console.log(err);// eslint-disable-line no-console
           dispatch(asyncFetchFailed()); // on API failure
@@ -264,6 +269,7 @@ export const initiateCheckout = (paypalEnabled, masterpassEnabled, masterPassErr
     } else {
       dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
     }
+    dispatch(asyncFetchSuccess());
   }).catch((err) => {
     console.log(err);// eslint-disable-line no-console
     dispatch(asyncFetchFailed());// on API failure
@@ -347,6 +353,7 @@ export const clearCart = () => (dispatch, getState) => {
     const { data } = res;
     if (res.data.statusCode === cartConstants.API_SUCCESS_CODE) {
       dispatch(resetCartItems(data));
+      updateCartCount(); // updates cart count in gnav
     } else {
       dispatch(showErrorNotification(getErrorMap(res.data.errorMap)));
     }
@@ -430,6 +437,7 @@ export const removeDevice = ({ commerceItemId, flow }) => (dispatch,
     if (response.data.statusCode === cartConstants.API_SUCCESS_CODE) {
       const { data } = response;
       dispatch(resetCartItems(data));
+      updateCartCount(); // updates cart count in gnav
     } else {
       dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
     }
@@ -473,6 +481,7 @@ export const removeStandAloneAccessory = (params) => (dispatch, getState) => {
     if (response.data.statusCode === cartConstants.API_SUCCESS_CODE) {
       const { data } = response;
       dispatch(resetCartItems(data));
+      updateCartCount(); // updates cart count in gnav
     } else {
       dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
     }
@@ -496,6 +505,7 @@ export const removeAccessoryBundle = (params) => (dispatch, getState) => {
     if (response.data.statusCode === cartConstants.API_SUCCESS_CODE) {
       const { data } = response;
       dispatch(resetCartItems(data));
+      updateCartCount(); // updates cart count in gnav
     } else {
       dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
     }
@@ -530,6 +540,7 @@ export const addRecommAccessoryToCart = (params) => (dispatch, getState) => {
     if (response.data.statusCode === cartConstants.API_SUCCESS_CODE) {
       const { data } = response;
       dispatch(resetCartItems(data));
+      updateCartCount(); // updates cart count in gnav
     } else {
       dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
     }
@@ -547,7 +558,6 @@ export const addRecommAccessoryToCart = (params) => (dispatch, getState) => {
 Recommended accessories actions
  */
 function recommAccAsyncFetch() {
-  window.showLoader();
   return {
     type: cartConstants.RECOMM_ACC_FETCH,
   };
@@ -555,6 +565,7 @@ function recommAccAsyncFetch() {
 
 
 function recommAccAsyncFetchSuccess(data) {
+  window.hideLoader();
   return {
     type: cartConstants.RECOMM_ACC_FETCH_SUCCESS,
     data,
@@ -563,6 +574,7 @@ function recommAccAsyncFetchSuccess(data) {
 
 
 function recommAccAsyncFetchFailed() {
+  window.hideLoader();
   return {
     type: cartConstants.RECOMM_ACC_FETCH_FAILURE,
   };
@@ -570,6 +582,7 @@ function recommAccAsyncFetchFailed() {
 
 
 export function recommAccInvalidateAsyncFetch() {
+  window.hideLoader();
   return {
     type: cartConstants.RECOMM_ACC_FETCH_INVALIDATE,
   };
@@ -729,4 +742,33 @@ export const removeTradeInDeviceFromCart = ({ ...params }) => (dispatch) => {
 
 export const showMasterPassError = (error) => (dispatch) => {
   dispatch(showErrorNotification(error));
+};
+
+/*
+Masterpass 3D secure
+ */
+export const handleCardinalResponseUrlApi = (data, jwt, url) => axios({
+  method: 'post',
+  url,
+  data: { cardinalJWTToken: jwt },
+});
+
+export const handle3dPaymentValidated = (data, jwt) => (dispatch, getState) => {
+  const state = getState().toJS();
+  const { handleCardinalResponseURL } = state;
+
+  handleCardinalResponseUrlApi(data, jwt, handleCardinalResponseURL).then((response) => {
+    dispatch(asyncFetchSuccess());// action to hide loader
+    if (response.data.statusCode === cartConstants.API_SUCCESS_CODE) {
+      dispatch(resetCartItems(response.data));
+      dispatch(hideNotification());
+    } else {
+      dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
+    }
+  }).catch((error) => {
+    // eslint-disable-next-line no-console
+    console.log('Catch Execption:', error);
+    dispatch(asyncFetchFailed());// on API failure
+    dispatch(hideNotification());
+  });
 };

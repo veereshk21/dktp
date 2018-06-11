@@ -200,7 +200,8 @@ export const setUserInput = (obj) => ((dispatch) => {
 export const fetchSMSDevices = () => (dispatch, getState) => {
   dispatch(asyncFetch());// action to show loader
   const state = getState().toJS();
-  const url = state.pageJSON.fetchSMSDevicesUrl;
+  const flowParam = '?flow=byod';
+  const url = state.pageJSON.fetchSMSDevicesUrl + flowParam;
   getAPI(url).then((response) => {
     if (response.data.statusCode === Constants.API_SUCCESS_CODE) {
       dispatch(asyncFetchSucess({ smsDevicesFetched: true, ...response.data }));// action to hide loader
@@ -221,7 +222,8 @@ export const fetchSMSDevices = () => (dispatch, getState) => {
 export const sendSMS = (sendSMSTo) => (dispatch, getState) => {
   dispatch(asyncFetch());
   const state = getState().toJS();
-  const url = state.pageJSON.sendSMSUrl;
+  const flowParam = '?flow=byod';
+  const url = state.pageJSON.sendSMSUrl + flowParam;
   getAPI(url, { sendSMSTo }).then((response) => {
     if (response.data.statusCode === '00') {
       dispatch(asyncFetchSucess({ sentSMS: true, ...response.data.output }));// action to hide loader
@@ -241,7 +243,8 @@ export const sendSMS = (sendSMSTo) => (dispatch, getState) => {
 export const validateAuthCode = (authCode) => (dispatch, getState) => {
   dispatch(asyncFetch());
   const state = getState().toJS();
-  const url = state.pageJSON.validateAuthCodeUrl;
+  const flowParam = '?flow=byod';
+  const url = state.pageJSON.validateAuthCodeUrl + flowParam;
   getAPI(url, { authCode }).then((response) => {
     const respData = response.data;
     dispatch(asyncFetchSucess());

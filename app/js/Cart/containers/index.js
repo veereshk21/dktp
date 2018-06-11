@@ -1,8 +1,9 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { clearCart, toggleModal, getRecommendedAcc } from './../actions';
+import { clearCart, toggleModal, getRecommendedAcc, handle3dPaymentValidated } from './../actions';
 import Index from '../components';
+import { showErrorNotification } from './../../common/NotificationBar/actions';
 
 const getTotalItemsCount = (cartData) => {
   const totalDevices = cartData.items ? cartData.items.length : 0;
@@ -32,10 +33,12 @@ const mapStateToProps = (state) => {
     totalItems,
     lastIntent,
     modalStatus,
+    authInfo: cartData.authInfo,
+    masterpass3DSecure: cartData.masterpass3DSecure,
     emailResponse: data.accountEmailFeature || {},
   };
 };
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ clearCart, toggleModal, getRecommendedAcc }, dispatch);
+const mapDispatchToProps = (dispatch) => bindActionCreators({ clearCart, toggleModal, getRecommendedAcc, showErrorNotification, handle3dPaymentValidated }, dispatch);
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Index));

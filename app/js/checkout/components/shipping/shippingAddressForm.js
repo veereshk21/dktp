@@ -7,7 +7,7 @@ import MSelect from '../../../common/Select/index';
 import Checkbox from '../../../common/Checkbox/index';
 
 const ShippingAddressForm = (props) => {
-  const { cqContent, formEnabled, authEnabled, isBuisnessAddress, states, change, billingAddress } = props;
+  const { cqContent, isBuisnessAddress, states, change, billingAddress, checkoutStates, addressInfo } = props;
 
   const onCheckBoxClick = () => {
     if (!props.formValues.sameAsBilling) {
@@ -20,27 +20,176 @@ const ShippingAddressForm = (props) => {
       change('zipcode', billingAddress.zipcode);
     }
   };
-  const onFormClick = (e) => {
-    if (authEnabled && !formEnabled) {
-      e.preventDefault();
-      props.fetchSMSDevices();
-    } else if (!authEnabled) {
-      props.notifySecurePinIneligible();
+  const onFormClick = () => {
+    if (props.formValues.sameAsBilling) {
+      change('sameAsBilling', false);
     }
   };
+
   return (
     <form // eslint-disable-line
       id="field"
       className="margin0"
     >
       <div className="clearfix">
-        <Row className="border_grayThree onlyBottomBorder pad12 onlyBottomPad">
-          <Col xs={6} className="border_grayThree onlyRightBorder" style={{ paddingRight: 18 }}>
-            <div className="margin12 onlyBottomMargin">
-              <h3>{cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_SECTION_TITLE} </h3>
+        <div className="margin12 onlyBottomMargin">
+          {!checkoutStates.contactInfoRequired &&
+            <div>
+              <Row className="margin12 onlyBottomMargin">
+                <Col xs={6} onClick={onFormClick}>
+                  <div className="positionRelative">
+                    <MSelect
+                      label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_WHERE_TO_SHIP}
+                      name="shipToType"
+                      id="shipToType"
+                      borderStyle
+
+                    >
+                      <option value="residence">{cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_SHIP_TO_RESIDENCE}</option>
+                      <option value="business">{cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_SHIP_TO_BILLING}</option>
+
+                    </MSelect>
+                  </div>
+                </Col>
+                <Col xs={6} onClick={onFormClick}>
+                  <Field
+                    component={renderTextField}
+                    id="businessName"
+                    name="businessName"
+                    label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_COMPANY_NAME_TEXT}
+                    type="text"
+                    required={isBuisnessAddress}
+
+                  />
+                </Col>
+              </Row>
+              <Row className="margin12 noSideMargin">
+                <Col xs={6}>
+                  <Field
+                    component={renderTextField}
+                    id="firstName"
+                    name="firstName"
+                    label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_FIRST_NAME_TEXT}
+                    type="text"
+                    required
+                  />
+                </Col>
+                <Col xs={6}>
+                  <Field
+                    component={renderTextField}
+                    id="lastName"
+                    name="lastName"
+                    label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_LAST_NAME_TEXT}
+                    type="text"
+                    required
+                  />
+                </Col>
+              </Row>
+              <Row className="margin12 noSideMargin">
+                <Col xs={6} onClick={onFormClick}>
+                  <Field
+                    component={renderTextField}
+                    id="address1"
+                    name="address1"
+                    label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_SHIPPING_ADDRESS_PRIMARY_TEXT}
+                    type="text"
+                    required
+
+                  />
+                </Col>
+                <Col xs={6} onClick={onFormClick}>
+                  <Field
+                    component={renderTextField}
+                    id="address2"
+                    name="address2"
+                    label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_SHIPPING_ADDRESS_SECONDARY_TEXT}
+                    type="text"
+
+                  />
+                </Col>
+              </Row>
+              <Row className="margin12 noSideMargin">
+                <Col xs={6} onClick={onFormClick}>
+                  <Field
+                    component={renderTextField}
+                    id="city"
+                    name="city"
+                    label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_CITY_TEXT}
+                    type="text"
+                    required
+
+                  />
+                </Col>
+
+                <Col xs={3} onClick={onFormClick}>
+                  <div
+                    style={{ marginTop: 28 }}
+                    className="positionRelative"
+                  >
+                    <MSelect
+                      label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_STATE_TEXT}
+                      name="state"
+                      aria-label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_STATE_TEXT}
+                      id="state"
+                      borderStyle
+                      required
+
+                    >
+                      <option disabled value="" />
+                      {states.map((state) => (
+                        <option key={state} value={state}>{state}</option>
+                      ))}
+                    </MSelect>
+                  </div>
+                </Col>
+                <Col xs={3} onClick={onFormClick}>
+                  <Field
+                    component={renderTextField}
+                    id="zipcode"
+                    name="zipcode"
+                    label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_ZIPCODE_TEXT}
+                    type="text"
+                    required
+
+                  />
+                </Col>
+              </Row>
             </div>
-            <Row>
-              <Col xs={12} onClick={(e) => { onFormClick(e); }}>
+          }
+
+          {/* Email & Phone Number */}
+          <Row>
+            {!(checkoutStates.contactInfoRequired && addressInfo.email) &&
+
+              <Col xs={6}>
+                <Field
+                  component={renderTextField}
+                  id="email"
+                  name="email"
+                  label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_EMAIL_TEXT}
+                  type="text"
+                  required
+                />
+              </Col>
+            }
+            {!(checkoutStates.contactInfoRequired && addressInfo.phoneNumber) &&
+
+              <Col xs={6}>
+                <Field
+                  component={renderTextField}
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_PHONE_NUMBER_TEXT}
+                  type="text"
+                  maxLength="10"
+                  required
+                />
+              </Col>
+            }
+          </Row>
+          {!checkoutStates.contactInfoRequired &&
+            <Row className="margin24 noSideMargin">
+              <Col xs={12}>
                 <Checkbox
                   className="checkbox"
                   name="sameAsBilling"
@@ -58,158 +207,8 @@ const ShippingAddressForm = (props) => {
                 </Checkbox>
               </Col>
             </Row>
-            <Row className="margin12 onlyBottomMargin">
-              <Col xs={12} onClick={(e) => { onFormClick(e); }}>
-                <div>
-                  <MSelect
-                    label={<span className="is-visuallyHidden">{cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_WHERE_TO_SHIP}</span>}
-                    name="shipToType"
-                    aria-label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_STATE_TEXT}
-                    id="shipToType"
-                    borderStyle
-                    disabled={!formEnabled || props.formValues.sameAsBilling}
-                  >
-                    <option value="residence">{cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_SHIP_TO_RESIDENCE}</option>
-                    <option value="business">{cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_SHIP_TO_BILLING}</option>
-
-                  </MSelect>
-                </div>
-              </Col>
-            </Row>
-            {isBuisnessAddress &&
-              <Row className="margin12 noSideMargin">
-                <Col xs={12} onClick={(e) => { onFormClick(e); }}>
-                  <Field
-                    component={renderTextField}
-                    id="businessName"
-                    name="businessName"
-                    label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_COMPANY_NAME_TEXT}
-                    type="text"
-                    required={isBuisnessAddress}
-                    disabled={!formEnabled || props.formValues.sameAsBilling}
-                  />
-                </Col>
-              </Row>
-            }
-            <Row className="margin12 noSideMargin">
-              <Col xs={6}>
-                <Field
-                  component={renderTextField}
-                  id="firstName"
-                  name="firstName"
-                  label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_FIRST_NAME_TEXT}
-                  type="text"
-                  required
-                />
-              </Col>
-              <Col xs={6}>
-                <Field
-                  component={renderTextField}
-                  id="lastName"
-                  name="lastName"
-                  label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_LAST_NAME_TEXT}
-                  type="text"
-                  required
-                />
-              </Col>
-            </Row>
-            <Row className="margin12 noSideMargin">
-              <Col xs={12} onClick={(e) => { onFormClick(e); }}>
-                <Field
-                  component={renderTextField}
-                  id="address1"
-                  name="address1"
-                  label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_SHIPPING_ADDRESS_PRIMARY_TEXT}
-                  type="text"
-                  required
-                  disabled={!formEnabled || props.formValues.sameAsBilling}
-                />
-              </Col>
-            </Row>
-            <Row className="margin12 noSideMargin">
-              <Col xs={12} onClick={(e) => { onFormClick(e); }}>
-                <Field
-                  component={renderTextField}
-                  id="address2"
-                  name="address2"
-                  label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_SHIPPING_ADDRESS_SECONDARY_TEXT}
-                  type="text"
-                  disabled={!formEnabled || props.formValues.sameAsBilling}
-                />
-              </Col>
-            </Row>
-            <Row className="margin12 noSideMargin">
-              <Col xs={12} onClick={(e) => { onFormClick(e); }}>
-                <Field
-                  component={renderTextField}
-                  id="zipcode"
-                  name="zipcode"
-                  label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_ZIPCODE_TEXT}
-                  type="text"
-                  required
-                  disabled={!formEnabled || props.formValues.sameAsBilling}
-                />
-              </Col>
-            </Row>
-            <Row className="margin12 noSideMargin">
-              <Col xs={6} onClick={(e) => { onFormClick(e); }}>
-                <Field
-                  component={renderTextField}
-                  id="city"
-                  name="city"
-                  label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_CITY_TEXT}
-                  type="text"
-                  required
-                  disabled={!formEnabled || props.formValues.sameAsBilling}
-                />
-              </Col>
-
-              <Col xs={6}>
-                <div style={{ marginTop: 28 }}>
-                  <MSelect
-                    label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_STATE_TEXT}
-                    name="state"
-                    aria-label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_STATE_TEXT}
-                    id="state"
-                    borderStyle
-                    required
-                    disabled={!formEnabled || props.formValues.sameAsBilling}
-                  >
-                    {states.map((state) => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
-                  </MSelect>
-                </div>
-              </Col>
-            </Row>
-          </Col>
-          <Col xs={6} style={{ paddingLeft: 18, marginTop: 64 }}>
-            <Row>
-              <Col xs={12}>
-                <Field
-                  component={renderTextField}
-                  id="email"
-                  name="email"
-                  label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_EMAIL_TEXT}
-                  type="text"
-                  required
-                />
-              </Col>
-            </Row>
-            <Row className="margin12 noSideMargin">
-              <Col xs={12}>
-                <Field
-                  component={renderTextField}
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  label={cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_PHONE_NUMBER_TEXT}
-                  type="text"
-                  required
-                />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+          }
+        </div>
       </div>
     </form>
   );
@@ -217,13 +216,13 @@ const ShippingAddressForm = (props) => {
 
 ShippingAddressForm.propTypes = {
   cqContent: PropTypes.object,
-  formEnabled: PropTypes.bool,
   isBuisnessAddress: PropTypes.bool,
   states: PropTypes.array,
-  authEnabled: PropTypes.bool,
   change: PropTypes.func,
   billingAddress: PropTypes.object,
-  formValues: PropTypes.object,
+  addressInfo: PropTypes.object,
+  checkoutStates: PropTypes.object,
+  // formValues: PropTypes.object,
 };
 
 export default ShippingAddressForm;

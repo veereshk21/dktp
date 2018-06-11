@@ -47,8 +47,13 @@ class MDNDetails extends React.Component {
     }
 
     const isLineLevelEligible = mdnDetails.upgradeEligbile === true || (mdnDetails.inEligibleCode === '08' || mdnDetails.inEligibleCode === '12' || mdnDetails.inEligibleCode === '11' || mdnDetails.inEligibleCode === '10');
-    const isAccLevelEligible = (accountLevelInEligibleDetails === null || (accountLevelInEligibleDetails.accountLevelEUPInEligibleDetails && (accountLevelInEligibleDetails.accountLevelEUPInEligibleDetails.accountLevelInEligibleCode === '12' || accountLevelInEligibleDetails.accountLevelEUPInEligibleDetails.accountLevelInEligibleCode === '08' || accountLevelInEligibleDetails.accountLevelEUPInEligibleDetails.accountLevelInEligibleCode === 'PENDING_SWITCH_ORDER' || accountLevelInEligibleDetails.accountLevelEUPInEligibleDetails.accountLevelInEligibleCode === 'PENDING_ORDER')) || (accountLevelInEligibleDetails.accountLevelAALInEligibleDetails && (accountLevelInEligibleDetails.accountLevelAALInEligibleDetails.accountLevelInEligibleCode === '12' || accountLevelInEligibleDetails.accountLevelAALInEligibleDetails.accountLevelInEligibleCode === '08' || accountLevelInEligibleDetails.accountLevelAALInEligibleDetails.accountLevelInEligibleCode === 'PENDING_ORDER' || accountLevelInEligibleDetails.accountLevelAALInEligibleDetails.accountLevelInEligibleCode === 'PENDING_SWITCH_ORDER')));
+    const isAccLevelEligible = (accountLevelInEligibleDetails === null || (accountLevelInEligibleDetails.accountLevelEUPInEligibleDetails && (accountLevelInEligibleDetails.accountLevelEUPInEligibleDetails.accountLevelInEligibleCode === '12' ||
+    accountLevelInEligibleDetails.accountLevelEUPInEligibleDetails.accountLevelInEligibleCode === '10' ||
+    accountLevelInEligibleDetails.accountLevelEUPInEligibleDetails.accountLevelInEligibleCode === '08' || accountLevelInEligibleDetails.accountLevelEUPInEligibleDetails.accountLevelInEligibleCode === 'PENDING_SWITCH_ORDER' || accountLevelInEligibleDetails.accountLevelEUPInEligibleDetails.accountLevelInEligibleCode === 'PENDING_ORDER')) || (accountLevelInEligibleDetails.accountLevelAALInEligibleDetails && (accountLevelInEligibleDetails.accountLevelAALInEligibleDetails.accountLevelInEligibleCode === '12' ||
+    accountLevelInEligibleDetails.accountLevelAALInEligibleDetails.accountLevelInEligibleCode === '10' ||
+    accountLevelInEligibleDetails.accountLevelAALInEligibleDetails.accountLevelInEligibleCode === '08' || accountLevelInEligibleDetails.accountLevelAALInEligibleDetails.accountLevelInEligibleCode === 'PENDING_ORDER' || accountLevelInEligibleDetails.accountLevelAALInEligibleDetails.accountLevelInEligibleCode === 'PENDING_SWITCH_ORDER')));
     const upgradeEligbile = isAccLevelEligible && isLineLevelEligible;
+    const buyoutRestrictedForEdge = mdnDetails.buyoutRestrictedForEdge;
 
     let mdnImgUrl = mdnDetails.imageUrl;
     let defaultImgClass = '';
@@ -61,7 +66,7 @@ class MDNDetails extends React.Component {
       mdnImgUrl = '';
       defaultImgClass = ' mtnDefaultImg';
     }
-    const isDisabled = (mdnDetails.mtnAddedToTheCart) || !upgradeEligbile || (mdnDetails.showTransferUpgrade && mdnDetails.transferUpgradeInProgress);
+    const isDisabled = (mdnDetails.mtnAddedToTheCart) || !upgradeEligbile || buyoutRestrictedForEdge || (mdnDetails.showTransferUpgrade && mdnDetails.transferUpgradeInProgress);
 
     return (
       <div className={isDisabled ? 'background_gray_three' : ''}>
@@ -81,7 +86,7 @@ class MDNDetails extends React.Component {
               <img className={'' + defaultImgClass} src={mdnImgUrl} srcSet={`${mdnImgUrl} 2x`} alt={mdnDetails.brand + ' Phone'} style={{ width: '100%' }} />
             </div>
           </Col>
-          <Col md={2} xs={2} className="verticalMiddle">
+          <Col md={3} xs={3} className="verticalMiddle">
             <div className="fontSize_4">
               {mdnDetails.nickname}
             </div>
@@ -119,9 +124,9 @@ class MDNDetails extends React.Component {
             {(!mdnDetails.showTransferUpgrade && mdnDetails.transferUpgradeInProgress && mdnDetails.transferredFromMtn) &&
               <div className="fontSize_4 bold margin12 onlyTopMargin">{cqJSON.label.DT_OD_MDN_UPGRADE_TRANSFER_DESCRIPTION}&nbsp;{mdnDetails.transferredFromMtn}</div>
             }
-            <div>{mdnDetails.upgradeMessage}</div>
+            <div className="margin5 onlyTopMargin bold fontSize_3">{mdnDetails.upgradeMessage}</div>
           </Col>
-          <Col md={4} xs={4} className="verticalMiddle">
+          <Col md={3} xs={3} className="verticalMiddle">
             <div className="fontSize_4 margin12 onlyBottomMargin">
               <span>{mdnDetails.displayMtn}</span>
             </div>

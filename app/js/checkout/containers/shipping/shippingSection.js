@@ -6,7 +6,7 @@ import * as actionCreators from '../../actions';
 function mapStateToProps(state) {
   const data = state.get('orderDetails').toJS();
   const editState = state.get('editState').toJS();
-  const forms = state.get('form').toJS();
+  // const forms = state.get('form').toJS();
   const cqContent = state.get('cqContent').toJS();
   const asyncCallStatus = state.get('asyncCallStatus');
 
@@ -22,7 +22,6 @@ function mapStateToProps(state) {
     orderId: data.orderId,
     standaloneAccessories: data.standaloneAccessories,
     checkoutStates: data.checkoutStates,
-    ispuChangeToShip: (forms && forms.ispuContactInfo && forms.ispuContactInfo.values ? forms.ispuContactInfo.values.shippingAddressType === 'shipToMe' : false),
   };
 }
 

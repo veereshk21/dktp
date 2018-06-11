@@ -59,9 +59,9 @@ class SelectedPaymentMethod extends Component {
       <Row>
         <Col xs={6}>
           <div className="margin12 onlyBottomMargin">
-            <p className="bold fontSize_5 verticalBottom displayInlineBlock margin10 onlyRightMargin">
+            <h3 className="verticalBottom displayInlineBlock margin10 onlyRightMargin">
               {cqContent.label.DT_OD_CHECKOUT_PAYMENT_COMPLETED_SECTION_TITLE}
-            </p>
+            </h3>
 
             <EditButton onClick={this.onClickEdit} />
           </div>
@@ -69,12 +69,12 @@ class SelectedPaymentMethod extends Component {
           <div style={{ wordWrap: 'break-word' }}>{this.renderPaymentMethod()}</div>
 
         </Col>
-        <Col xs={6}>
+        <Col xs={4} lg={5} lgOffset={1} className="billingAddressEdit">
           {/* Billing Address */}
 
-          <p className="bold fontSize_5 margin12 onlyBottomMargin">
+          <h3 className="margin12 onlyBottomMargin">
             {cqContent.label.DT_OD_CHECKOUT_PAYMENT_BILLING_ADDRESS_SECTION_TITLE}
-          </p>
+          </h3>
 
           {billingAddress.businessName &&
             <p>{billingAddress.businessName}</p>

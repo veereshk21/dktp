@@ -137,10 +137,8 @@ class AddNewCardAgentForm extends Component {
     }
     console.log(ConvertedJSON);
     if (this.props.valid) {
-      this.props.postCyberSourceData(ConvertedJSON, url);
-    } else {
-      alert('not submitted');
-    }
+      this.refs.form.submit();
+    } 
   }
  
   render() {

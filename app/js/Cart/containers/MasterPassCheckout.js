@@ -2,6 +2,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import * as CartActions from '../actions';
+import { showErrorNotification } from './../../common/NotificationBar/actions';
 import MasterPass from '../components/MasterPassCheckout';
 
 const mapStateToProps = (state) => {
@@ -12,9 +13,10 @@ const mapStateToProps = (state) => {
     cartData,
     cq: data.cqContent,
     isAccountMember: cartData.accountMember,
+    masterpassConfigInfo: cartData.masterpassConfigInfo,
   };
 };
 
-const mapDispatchToProps = (dispatch) => bindActionCreators(CartActions, dispatch);
+const mapDispatchToProps = (dispatch) => bindActionCreators({ ...CartActions, showErrorNotification }, dispatch);
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MasterPass));

@@ -38,4 +38,3 @@ MasterPassWrapper.propTypes = {
 };
 
 export default MasterPassWrapper;
-

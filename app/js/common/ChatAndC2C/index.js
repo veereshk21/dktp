@@ -14,32 +14,15 @@ class ChatAndC2C extends Component {
           }
         }
       }
-      // document.getElementsByTagName('script')[0].src.split('?')[0];
-      // tag.src.split('?')[0] === c2cjs
-      // const c2cjs = 'https://scache.vzw.com/support/etc/designs/support_rd/c2c.js';
-      // const scriptArray = Array.prototype.slice.call(document.getElementsByTagName('script'));
-      // const c2cJSIndex = scriptArray.filter((tag, index) => {
-      //   if (tag.src.split('?')[0] === c2cjs) {
-      //     console.log(index);
-      //     console.log(tag.src);
-      //     console.log(index);
-      //     return index;
-      //   }
-      //   return -1;
-      // });
-      // document.getElementsByTagName('script')[c2cJSIndex].remove();
-      // console.log(document.getElementsByTagName('script'));
-      // const newC2CJs = document.createElement('script');
-      // newC2CJs.src = `${c2cjs}?_=${Date.now()}`;
-      // const headTag = document.getElementsByName('head')[0];
-      // headTag.appendChild(newC2CJs);
-      // console.log(document.getElementsByTagName('script'));
+      if (window.c2c !== null && window.c2c !== undefined) {
+        try {
+          console.log('trying  the try');
+          window.c2c.initializeC2C([{ buttonname: 'generic-c2c-container-desktop', targeteddiv: ['c2c_container_desktop'], url: '/content/vzw-engage/c2c/btn.display.generic-c2c-container-desktop.html' }]);
+        } catch (err) {
+          console.log('Unable to reinitialize c2c: ' + err);
+        }
+      }
     }, 2000);
-
-    // Write script to re-initialize the c2c.js script tag
-    // https://stcache.vzw.com/support/etc/designs/support_rd/c2c.js?_=1524603752368
-    // https://stcache.vzw.com/support/etc/designs/support_rd/c2c.js?_=1524603819649
-    // https://stcache.vzw.com/support/etc/designs/support_rd/c2c.js
   }
   render = () => (
     <div className="textAlignRight positionRelative">

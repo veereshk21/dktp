@@ -9,14 +9,14 @@ const ContinueShoppingModal = (props) => {
       className="margin36 onlyTopMargin"
     >{cqContent.label.DT_OD_CART_CONTINUE_SHOPPING_MODAL_SUB_TEXT}
     </p>
-    <div className="margin30 onlyTopMargin">
+    <div className="margin30 onlyTopMargin cartModalButtons">
       <button
-        className="button primary margin20 onlyRightMargin"
+        className="button primary margin5 onlyRightMargin addModalBtn"
         onClick={() => { onContinueShoppingHandler('aal'); }}
       >{cqContent.label.DT_OD_CART_ADD_DEVICE_CTA_TEXT}
       </button>
       {allowEUP === true && <button
-        className="button primary"
+        className="button primary addModalBtn"
         onClick={() => { onContinueShoppingHandler('eup'); }}
       >{cqContent.label.DT_OD_CART_UPGRADE_DEVICE_CTA_TEXT}
       </button>}

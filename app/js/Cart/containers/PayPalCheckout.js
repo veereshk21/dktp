@@ -17,6 +17,7 @@ const mapStateToProps = (state) => {
     authenticated: cartData.authenticated,
     standaloneAccessories: cartData.standaloneAccessories,
     guestCheckoutSignInURL: cartData.guestCheckoutSignInURL,
+    accGuestCheckoutEnabled: cartData.accGuestCheckoutEnabled,
   };
 };
 

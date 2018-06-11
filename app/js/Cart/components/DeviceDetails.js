@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+// import { Row, Col } from 'react-flexbox-grid';
 import ItemHeader from './ItemHeader';
 import TradeInDevice from './TradeInDevice';
 import TradeInPromoDetails from './TradeInPromoDetails';
@@ -16,12 +17,14 @@ const DeviceDetails = (props) => {
   const {
     cqContent, items, protectionURL, plans, tradeInPromoEligible, tradeInPromoDetails, removeTradeInDeviceFromCart,
     tradeInUrl, clearCart, cpcSucessful, removeDevice, accessoriesBundle, accessories, standaloneAccessories,
-    isNSOFlow, recommendedAccessories, tmpMd, emptyCartFlag, itemOnJaxPlan, autoPayApplied } = props;
+    isNSOFlow, recommendedAccessories, tmpMd, emptyCartFlag, itemOnJaxPlan, autoPayApplied, authenticated } = props;
   const { isFetching, error, data } = recommendedAccessories;
   const isStatndAlAccessorieExist = ((accessories && accessories.length > 0) ||
     accessoriesBundle);
   const isPlansExists = (plans && plans.items.length > 0);
   const showTmpMdPriceIndex = 0;
+  let tapIndex = 0;
+  let tapExistIndex = 0;
   let nonNSODevices = 0;
   return (
     <div>{emptyCartFlag === false && <div>
@@ -43,8 +46,11 @@ const DeviceDetails = (props) => {
               clearCart={clearCart}
               cpcSucessful={cpcSucessful}
               removeDevice={removeDevice}
+              tapIndex={(deviceInfo.flow !== 'NSO' && !deviceInfo.protectionOption) ? (tapIndex += 1) : tapIndex}
+              tapExistIndex={(deviceInfo.flow !== 'NSO' && deviceInfo.protectionOption && deviceInfo.protectionOption.featureType === 'SPO') ? (tapExistIndex += 1) : tapExistIndex}
               tmpMd={tmpMd}
               index={deviceInfo.flow !== 'NSO' && (nonNSODevices += 1)}
+              authenticated={authenticated}
             />
           </ItemHeader>
         </ItemWrapper>
@@ -73,7 +79,44 @@ const DeviceDetails = (props) => {
           </ItemHeader>
         </ItemWrapper>
       }
-
+      {/* <ItemWrapper>
+        <ItemHeader
+          cqContent={cqContent}
+          standaloneAccessories={standaloneAccessories}
+        >
+          <Row>
+            <Col xsOffset={2} xs={10}>
+              <Row end="xs">
+                <Col
+                  xs={7}
+                  className="bold fontSize_9"
+                >
+                  Subtotal
+                </Col>
+                <Col xs={5}>
+                  <Row center="xs">
+                    { standaloneAccessories ?
+                      <Col xs={6} /> :
+                      <Col
+                        xs={6}
+                        className="bold fontSize_9"
+                      >
+                        ${props.totalDueMonthly}
+                      </Col>
+                    }
+                    <Col
+                      xs={6}
+                      className="bold fontSize_9"
+                    >
+                      ${props.rawSubTotalDueToday}
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </ItemHeader>
+      </ItemWrapper> */}
       {standaloneAccessories === false && isNSOFlow === false &&
         <ItemWrapper>
           {tradeInPromoEligible === true && tradeInPromoDetails === null ?
@@ -89,7 +132,7 @@ const DeviceDetails = (props) => {
         </ItemWrapper>
       }
 
-      {(isFetching === false && Object.keys(data).length > 0) && error === false &&
+      {(isFetching === false && Object.keys(data).length > 0 && (data.output.recommendedAccessoriesDetails && data.output.recommendedAccessoriesDetails.length > 0)) && error === false &&
         <ItemWrapper>
           <RecommendedAccesoriesWrapper />
         </ItemWrapper>
@@ -119,5 +162,8 @@ DeviceDetails.propTypes = {
   removeTradeInDeviceFromCart: PropTypes.func,
   itemOnJaxPlan: PropTypes.bool,
   autoPayApplied: PropTypes.bool,
+  authenticated: PropTypes.bool,
+  // totalDueMonthly: PropTypes.string,
+  // rawSubTotalDueToday: PropTypes.string,
 };
 export default DeviceDetails;

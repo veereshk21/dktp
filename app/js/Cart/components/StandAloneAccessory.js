@@ -14,6 +14,10 @@ class StandAloneAccessory extends Component {
     this.toggleRemovePromptHandler = this.toggleRemovePromptHandler.bind(this);
   }
 
+  componentWillReceiveProps() {
+    this.setState({ isPrompted: false });
+  }
+
   toggleRemovePromptHandler() {
     const { isPrompted } = this.state;
     this.setState({ isPrompted: !isPrompted });
@@ -58,14 +62,6 @@ class StandAloneAccessory extends Component {
                   {color}
                 </Col>
               </Row>
-              { discounted &&
-                <Row className="pad12 onlyTopPad">
-                  <Col xs={12} style={{ position: 'relative' }}>
-                    <span className="font-icon_tag" />
-                    <span className="pad18 onlyLeftPad">{cqContent.label.DT_OD_CART_STANDALONE_ACCESSORY_PROMO_MESSAGE.replace('$PERCENTAGE$', Math.floor(discountPercentage))}</span>
-                  </Col>
-                </Row>
-              }
               <div className="margin12 onlyTopMargin">
                 {standaloneAccessory &&
                   (hideEditLink !== true) && <Anchor
@@ -84,15 +80,22 @@ class StandAloneAccessory extends Component {
                 >{cqContent.label.DT_OD_CART_ACCESSORIES_REMOVE_CTA_TEXT}
                 </Anchor>
               </div>
+              {discounted &&
+                <Row className="pad12 onlyTopPad">
+                  <Col xs={12} style={{ position: 'relative' }}>
+                    <span className="bold color_blue">{cqContent.label.DT_OD_CART_STANDALONE_ACCESSORY_PROMO_MESSAGE.replace('$PERCENTAGE$', Math.floor(discountPercentage))}</span>
+                  </Col>
+                </Row>
+              }
             </Col>
             <Col md={4} lg={4}>
               <Row>
-                <Col xsOffset={6} xs={6}>
+                <Col xs={6} className="textAlignCenter bold">--</Col>
+                <Col xs={6}>
                   <div className="textAlignCenter">
                     {discounted ?
                       <div>
-                        <span className="bold">${price}</span>
-                        <br />
+                        <span className="bold block">${price}</span>
                         <span className="textDecLineThrough">${wasPrice}</span>
                       </div>
                       :
@@ -105,7 +108,7 @@ class StandAloneAccessory extends Component {
           </Row>
           :
           <div>
-            <p className="fontSize_5 bold" >{`Are you sure you want to remove ${name} from your cart?`}</p>
+            <p className="fontSize_5 bold" dangerouslySetInnerHTML={{ __html: `Are you sure you want to remove ${name} from your cart?` }} />
             <div className="margin12 onlyTopMargin">
               <Row>
                 <Col md={12}>

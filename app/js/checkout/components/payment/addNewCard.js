@@ -81,23 +81,24 @@ const AddNewCardForm = (props) => {
           <MSelect
             name="card_month"
             id="card_month"
-            label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_MONTH}
+            label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_DATE}
+            aria-label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_MONTH}
             borderStyle
             required
           >
-            <option disabled value="" />
+            <option disabled value="">{cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_MONTH}</option>
             {billingInfo.expirationMonths.map((month) => (<option key={`month-${month}`} value={month}>{month}</option>))}
           </MSelect>
         </Col>
-        <Col xs={4}>
+        <Col xs={4} style={{ marginTop: 22 }}>
           <MSelect
             name="card_year"
             id="card_year"
-            label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_YEAR}
+            aria-label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_YEAR}
             borderStyle
             required
           >
-            <option disabled value="" />
+            <option disabled value="">{cqContent.label.DT_OD_CHECKOUT_PAYMENT_CARD_EXPIRATION_YEAR}</option>
             {billingInfo.expirationYears.map((year) => (<option key={`year-${year}`} value={year}>{year}</option>))}
           </MSelect>
         </Col>
@@ -121,11 +122,20 @@ const AddNewCardForm = (props) => {
           />
         </Col>
       </Row>
-      <div>
-        <p>{cqContent.label.DT_OD_CHECKOUT_PAYMENT_CREDIT_CARD_ZIP_CODE_LABEL}</p>
-        <p className="margin18">{billingInfo.billingAddress.zipcode}</p>
-      </div>
-
+      <Row className="margin18 noSideMargin">
+        <Col xs={4} className="clearfix">
+          <Field
+            className=""
+            component={renderTextField}
+            id="card_zip"
+            name="card_zip"
+            label={cqContent.label.DT_OD_CHECKOUT_PAYMENT_CREDIT_CARD_ZIP_CODE_LABEL}
+            type="text"
+            tooltip={<p>{cqContent.label.DT_OD_CHECKOUT_PAYMENT_CREDIT_CARD_ZIP_CODE_TOOLTIP}</p>}
+            disabled
+          />
+        </Col>
+      </Row>
     </div >
   );
 };

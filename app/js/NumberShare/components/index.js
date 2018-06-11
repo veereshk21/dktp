@@ -175,7 +175,7 @@ class NumberShare extends Component {
           <a
             onClick={this
               .displayHaveOwnNoModal} className="bold textDecUnderline margin20 onlyTopMargin block cursorPointer"
-            dangerouslySetInnerHTML={{ __html: cqContent.label.DT_OD_NS_SHARE_EXISTING }}
+            dangerouslySetInnerHTML={{ __html: cqContent.label.DT_OD_NS_OWN_NUMBER }}
           />
         }
       </div>);

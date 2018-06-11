@@ -1,7 +1,8 @@
 /* eslint-disable */
 import axios from 'axios';
-import * as notificationActions from '../common/NotificationBar/actions';
+import { hideNotification } from '../common/NotificationBar/actions';
 import { getErrorMap } from './../common/Helpers';
+import { hashHistory } from './../store';
 import {
   ASYNC_FETCH,
   ASYNC_FETCH_SUCCESS,
@@ -61,7 +62,7 @@ const getAPI = (url, parameters) => axios.request({
 export const submitLogin = () => (dispatch, getState) => {
   dispatch(asyncFetch());
   const state = getState().toJS();
-  const url = state.amLoginURL + state.amRedirectCheckoutURL;
+  const url = state.guestLoginDetails.amLoginURL + state.guestLoginDetails.amRedirectCheckoutURL;
   const data = {
     IDToken1: state.form.guestLoginForm.values.userName,
     IDToken2: state.form.guestLoginForm.values.password,
@@ -73,12 +74,12 @@ export const submitLogin = () => (dispatch, getState) => {
       dispatch(asyncFetchSucess({ ...response.data.output }));// action to hide loader
     } else {
       dispatch(asyncFetchSucess());
-      dispatch(showErrorNotification(getErrorMap(response.data.errorMap), NOTIFICATIONS.DEVICE));
+      dispatch(showErrorNotification(getErrorMap(response.data.errorMap)));
     }
   }).catch((error) => {
     // eslint-disable-next-line no-console
     console.log('Catch Execption:', error);
-    dispatch(asyncFetchFalied());
+    dispatch(asyncFetchFailure());
     dispatch(hideNotification());
     hashHistory.push('/genericError');
   });

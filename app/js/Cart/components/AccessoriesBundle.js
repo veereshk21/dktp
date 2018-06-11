@@ -15,6 +15,10 @@ class AccessoriesBundle extends Component {
     this.toggleRemovePromptHandler = this.toggleRemovePromptHandler.bind(this);
   }
 
+  componentWillReceiveProps() {
+    this.setState({ isPrompted: false });
+  }
+
   toggleRemovePromptHandler() {
     const { isPrompted } = this.state;
     this.setState({ isPrompted: !isPrompted });

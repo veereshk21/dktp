@@ -24,7 +24,7 @@ function mapStateToProps(state) {
     !data.checkoutStates.shippingAddressChangeRequired &&
     !data.checkoutStates.shippingAddressRequired &&
     !data.checkoutStates.shippingMethodRequired &&
-    npanxxErrorIndex < 0 && 
+    npanxxErrorIndex < 0 &&
     !data.flipIspuToShipping
   );
 
@@ -44,6 +44,8 @@ function mapStateToProps(state) {
     showPaymentSection: data.checkoutStates.showPaymentSection,
     masterpassError: data.billingInfo.masterpassError,
     flipIspuToShipping: data.flipIspuToShipping ? data.flipIspuToShipping : false,
+    checkoutStates: data.checkoutStates,
+    eppAccessoryPolicyModal: data.eppAccessoryTermsAndConditionDisplay,
   };
 }
 

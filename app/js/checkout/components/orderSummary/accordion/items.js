@@ -60,6 +60,14 @@ const ItemsAccordionItem = (props) => {
               />
             }
 
+            {device.edgeUpAmount > 0 &&
+            <SummaryRow
+              description={<p>{cqContent.label.DT_OD_CHECKOUT_SUMMARY_EDGE_UP}</p>}
+              dueToday={`$${device.edgeUpAmount.toFixed(2)}`}
+              dueMonthly="-"
+            />
+            }
+
             {parseFloat(device.edgeItemDownPaymentAmount) > 0 &&
               <SummaryRow
                 description={<p>{cqContent.label.DT_OD_CHECKOUT_SUMMARY_DOWNPAYMENT}</p>}
@@ -98,6 +106,15 @@ const ItemsAccordionItem = (props) => {
                 dueMonthly="-"
               />
             }
+
+            {device.devicePromotionList && device.devicePromotionList.map((offer) => (
+              (offer.promoAmount !== null && parseFloat(offer.promoAmount) > 0 && !offer.isUpgradeFeeWaivedOffer) &&
+              <SummaryRow
+                description={`${cqContent.label.DT_OD_CHECKOUT_OFFER_DISCOUNT_TEXT} : $${offer.promoAmount}`}
+                dueToday="-"
+                dueMonthly="-"
+              />
+            ))}
           </div>
         ))}
 

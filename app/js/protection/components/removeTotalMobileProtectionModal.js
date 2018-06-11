@@ -21,7 +21,6 @@ export default class RemoveTotalMobileProtectionModal extends Component {
         style={{ background: 'white', width: '500px' }}
         showCloseX
       >
-
         <Row>
           <Col xs={12}>
             <h3 className="border_black onlyBottomBorder pad6 onlyBottomPad">

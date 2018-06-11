@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
 import { Field, reduxForm } from 'redux-form/immutable';
@@ -43,7 +43,7 @@ const validate = (values, props) => {
   }
   if (!portInState) {
     errors.portInState = props.cqContent.error.DT_OD_CHECKOUT_FORM_FIELD_REQUIRED_TEXT;
-  } else if (!validation.isValidNameWithSpace(portInState)) {
+  } else if (!validation.isValidName(portInState)) {
     errors.portInState = props.cqContent.error.DT_OD_CHECKOUT_PORT_IN_INVALID_STATE_ERROR;
   }
   if (!portInZipCode) {
@@ -70,77 +70,45 @@ const validate = (values, props) => {
   return errors;
 };
 
-const PortNumber = (props) => {
-  const {
-    cqContent, valid, submitting, states, closeModal, handleSubmit, device,
-  } = props;
+class PortNumber extends Component {
+  componentWillReceiveProps = (newProps) => {
+    const {
+      data,
+    } = newProps.asyncCallStatus;
 
-  const submitPortIn = (data) => {
-    const params = transformPortIn(data.toJS());
-    props.validatePortIn(params);
+    if (data.zipCodeInfoFetched) {
+      this.props.change('portInCity', data.city);
+      this.props.change('portInState', data.state);
+      this.props.change('portInZipCode', data.zipcode);
+      this.props.invalidateAsyncFetch();
+    }
   };
 
-  return (
-    <div>
-      <NotificationBar section={NOTIFICATIONS.PORTIN} />
+  submitPortIn = (data) => {
+    const params = transformPortIn(data.toJS());
+    this.props.validatePortIn(params);
+  };
 
-      <div className="pad20">
-        <h2 className="margin12 noSideMargin">{cqContent.label.DT_OD_CHECKOUT_PORT_IN_TITLE}</h2>
-        <h3 className="fontSize_9 margin12 noSideMargin">{cqContent.label.DT_OD_CHECKOUT_PORT_IN_DEVICE_PREFIX} <span dangerouslySetInnerHTML={{ __html: device.deviceName }} /></h3>
-        <div dangerouslySetInnerHTML={{ __html: cqContent.html.DT_OD_CHECKOUT_PORT_IN_DISCLAIMER }} />
-        <Row className="border_grayThree onlyBottomBorder pad12 onlyBottomPad">
-          <Col xs={6} className="border_grayThree onlyRightBorder" style={{ paddingRight: 18 }}>
-            <Col xs={12} className="pad12 noSidePad">
-              <Field
-                component={renderTextField}
-                id="portInExistingNumber"
-                name="portInExistingNumber"
-                label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_EXISTING_NUMBER_TEXT}
-                type="text"
-                required
-              />
-            </Col>
-            <Col xs={12} className="pad12 noSidePad">
-              <Field
-                component={renderTextField}
-                id="portInExistingAccount"
-                name="portInExistingAccount"
-                label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_ACCOUNT_NUMBER_TEXT}
-                type="text"
-                required
-              />
-            </Col>
-            <Col xs={12} className="pad12 noSidePad">
-              <Field
-                component={renderTextField}
-                id="portInPin"
-                name="portInPin"
-                label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_PIN_TEXT}
-                type="text"
-                required
-              />
-            </Col>
-            <Col xs={12} className="pad12 noSidePad">
-              <Field
-                component={renderTextField}
-                id="portInContactNumber"
-                name="portInContactNumber"
-                label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_CONTACT_NUMBER_TEXT}
-                type="text"
-                required
-              />
-            </Col>
+  render() {
+    const {
+      cqContent, valid, submitting, states, handleSubmit, device, fetchZipCodeInfo,
+    } = this.props;
+    return (
+      <div>
+        <NotificationBar section={NOTIFICATIONS.PORTIN} />
 
-          </Col>
-          <Col xs={6} style={{ paddingLeft: 18 }}>
-            <Row>
-
+        <div className="pad20">
+          <h2 className="margin12 noSideMargin">{cqContent.label.DT_OD_CHECKOUT_PORT_IN_TITLE}</h2>
+          <h3 className="fontSize_9 margin12 noSideMargin">{cqContent.label.DT_OD_CHECKOUT_PORT_IN_DEVICE_PREFIX} <span dangerouslySetInnerHTML={{ __html: device.deviceName }} /></h3>
+          <div dangerouslySetInnerHTML={{ __html: cqContent.html.DT_OD_CHECKOUT_PORT_IN_DISCLAIMER }} />
+          <Row className="border_grayThree onlyBottomBorder pad12 onlyBottomPad">
+            <Col xs={6} className="border_grayThree onlyRightBorder" style={{ paddingRight: 18 }}>
               <Col xs={12} className="pad12 noSidePad">
                 <Field
                   component={renderTextField}
-                  id="portInName"
-                  name="portInName"
-                  label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_NAME_TEXT}
+                  id="portInExistingNumber"
+                  name="portInExistingNumber"
+                  label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_EXISTING_NUMBER_TEXT}
                   type="text"
                   required
                 />
@@ -148,9 +116,9 @@ const PortNumber = (props) => {
               <Col xs={12} className="pad12 noSidePad">
                 <Field
                   component={renderTextField}
-                  id="portInAddress"
-                  name="portInAddress"
-                  label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_ADDRESS_PRIMARY_TEXT}
+                  id="portInExistingAccount"
+                  name="portInExistingAccount"
+                  label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_ACCOUNT_NUMBER_TEXT}
                   type="text"
                   required
                 />
@@ -158,89 +126,138 @@ const PortNumber = (props) => {
               <Col xs={12} className="pad12 noSidePad">
                 <Field
                   component={renderTextField}
-                  id="portInAddress2"
-                  name="portInAddress2"
-                  label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_ADDRESS_SECONDARY_TEXT}
+                  id="portInPin"
+                  name="portInPin"
+                  label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_PIN_TEXT}
                   type="text"
+                  required
                 />
               </Col>
               <Col xs={12} className="pad12 noSidePad">
                 <Field
                   component={renderTextField}
-                  id="portInZipCode"
-                  name="portInZipCode"
-                  label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_ZIPCODE_TEXT}
+                  id="portInContactNumber"
+                  name="portInContactNumber"
+                  label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_CONTACT_NUMBER_TEXT}
                   type="text"
                   required
                 />
               </Col>
-              <Col xs={6} className="pad12 noSidePad">
-                <Field
-                  component={renderTextField}
-                  id="portInCity"
-                  name="portInCity"
-                  label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_CITY_TEXT}
-                  type="text"
-                  required
-                />
-              </Col>
-              <Col xs={6} className="pad12 noSidePad clearfix">
-                <MSelect
-                  label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_STATE_TEXT}
-                  name="portInState"
-                  aria-label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_STATE_TEXT}
-                  id="portInState"
-                  borderStyle
-                  required
-                >
-                  <option value="" disabled />
-                  {states.map((state) => (
-                    <option key={state} value={state}>{state}</option>
-                  ))}
-                </MSelect>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-        <div className="margin24 noSideMargin pad6 onlySidePad">
-          <Checkbox
-            className="checkbox"
-            name="portInAgreement"
-            id="portInAgreement"
-            component="input"
-            type="checkbox"
-            checkboxClass="displayInlineBlock pad6 noLeftPad"
-            labelClass="displayInlineBlock verticalCenter leftAlign pad6 checkboxLabel"
-          >
-            <p id="portInAgreementLabel" >{cqContent.label.DT_OD_CHECKOUT_PORT_IN_AGREEMENT}</p>
-          </Checkbox>
-        </div>
-        <div className="width100 margin24 onlyTopMargin clearfix">
-          <button
-            className="fontSize_3 link background_transparent displayInlineBlock borderSize_0 margin15 noLeftMargin"
-            onClick={closeModal}
-          >
-            {cqContent.label.DT_OD_CHECKOUT_PAYMENT_CANCEL}
-          </button>
-          <button
-            className="primary button large"
-            type="submit"
-            disabled={!valid || submitting}
-            onClick={
-              handleSubmit((data) => {
-                submitPortIn(data);
-              })
-            }
-          >
-            {cqContent.label.DT_OD_CHECKOUT_PORT_IN_BUTTON_TEXT}
-          </button>
 
+            </Col>
+            <Col xs={6} style={{ paddingLeft: 18 }}>
+              <Row>
+
+                <Col xs={12} className="pad12 noSidePad">
+                  <Field
+                    component={renderTextField}
+                    id="portInName"
+                    name="portInName"
+                    label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_NAME_TEXT}
+                    type="text"
+                    required
+                  />
+                </Col>
+                <Col xs={12} className="pad12 noSidePad">
+                  <Field
+                    component={renderTextField}
+                    id="portInAddress"
+                    name="portInAddress"
+                    label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_ADDRESS_PRIMARY_TEXT}
+                    type="text"
+                    required
+                  />
+                </Col>
+                <Col xs={12} className="pad12 noSidePad">
+                  <Field
+                    component={renderTextField}
+                    id="portInAddress2"
+                    name="portInAddress2"
+                    label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_ADDRESS_SECONDARY_TEXT}
+                    type="text"
+                  />
+                </Col>
+                <Col xs={12} className="pad12 noSidePad">
+                  <Field
+                    component={renderTextField}
+                    id="portInZipCode"
+                    name="portInZipCode"
+                    label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_ZIPCODE_TEXT}
+                    type="text"
+                    required
+                    onBlur={(evt) => {
+                      fetchZipCodeInfo(evt.target.value);
+                    }}
+                  />
+                </Col>
+                <Col xs={6} className="pad12 noSidePad">
+                  <Field
+                    component={renderTextField}
+                    id="portInCity"
+                    name="portInCity"
+                    label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_CITY_TEXT}
+                    type="text"
+                    required
+                  />
+                </Col>
+                <Col xs={6} className="pad12 noSidePad clearfix">
+                  <MSelect
+                    label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_STATE_TEXT}
+                    name="portInState"
+                    aria-label={cqContent.label.DT_OD_CHECKOUT_PORT_IN_STATE_TEXT}
+                    id="portInState"
+                    borderStyle
+                    required
+                  >
+                    <option value="" disabled />
+                    {states.map((state) => (
+                      <option key={state} value={state}>{state}</option>
+                    ))}
+                  </MSelect>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <div className="margin24 noSideMargin pad6 onlySidePad">
+            <Checkbox
+              className="checkbox"
+              name="portInAgreement"
+              id="portInAgreement"
+              component="input"
+              type="checkbox"
+              checkboxClass="displayInlineBlock pad6 noLeftPad"
+              labelClass="displayInlineBlock verticalCenter leftAlign pad6 checkboxLabel"
+            >
+              <p id="portInAgreementLabel" >{cqContent.label.DT_OD_CHECKOUT_PORT_IN_AGREEMENT}</p>
+            </Checkbox>
+          </div>
+          <div className="width100 margin24 onlyTopMargin clearfix">
+            <button
+              className="primary button large"
+              type="submit"
+              disabled={!valid || submitting}
+              onClick={
+                handleSubmit((data) => {
+                  this.submitPortIn(data);
+                })
+              }
+            >
+              {cqContent.label.DT_OD_CHECKOUT_PORT_IN_BUTTON_TEXT}
+            </button>
+
+            <button
+              className="secondary button large margin10 onlyLeftMargin"
+              onClick={this.props.closeModal}
+            >
+              {cqContent.label.DT_OD_CHECKOUT_PORT_IN_CANCEL}
+            </button>
+
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
-
+    );
+  }
+}
 PortNumber.propTypes = {
   cqContent: PropTypes.object,
   valid: PropTypes.bool,
@@ -249,6 +266,10 @@ PortNumber.propTypes = {
   states: PropTypes.array,
   handleSubmit: PropTypes.func,
   device: PropTypes.object,
+  fetchZipCodeInfo: PropTypes.func,
+  validatePortIn: PropTypes.func,
+  invalidateAsyncFetch: PropTypes.func,
+  change: PropTypes.func,
 };
 
 // export default PortNumber;

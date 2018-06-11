@@ -97,10 +97,11 @@ a {
 	text-decoration:none;
 	outline: none;
 }
-/* a:hover,
-input[type=submit]:hover {
+a:hover,
+input[type=submit]:hover,
+button.link:hover {
 	color: #0088CE;
-} */
+}
 input[type=submit] {
 	cursor: pointer;
 }

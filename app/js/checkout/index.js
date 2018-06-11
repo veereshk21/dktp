@@ -12,7 +12,7 @@ import axios from 'axios';
 import configureStore from './../store';
 import provider from './../provider';
 import createRoutes from './routes';
-import { orderDetails, cqContent, customerAgreement, asyncCallStatus, applePayAvailable, editState, storeDetails, cyberSourceData } from './reducer';
+import { orderDetails, cqContent, customerAgreement, asyncCallStatus, applePayAvailable, editState, storeDetails } from './reducer';
 import { notification } from '../common/NotificationBar/reducer';
 import { EDIT_STATE } from './constants';
 
@@ -33,7 +33,7 @@ import './../../css/modules/checkbox.scss';
 import './../../css/modules/accordion.scss';
 import './../../css/pages/checkout/checkout.scss';
 import cq from './../../cq/cq_checkout.json';
-// import reviewOrderJSON from './../../json/checkout/bta-ispu.js'; // eslint-disable-line
+// import reviewOrderJSON from './../../json/checkout/edwin'; // eslint-disable-line
 
 // import './applePay/assests/applepay.css';
 
@@ -48,12 +48,12 @@ axios.get(__webpack_public_path__ + cq).then((result) => {
     orderDetails: window.reviewOrderJSON.output || {},
     cqContent: result.data,
     editState: {
-      [EDIT_STATE.SHIPPING]: !!(window.reviewOrderJSON.output.checkoutStates && (window.reviewOrderJSON.output.checkoutStates.shippingAddressChangeRequired || window.reviewOrderJSON.output.checkoutStates.shippingAddressRequired || window.reviewOrderJSON.output.checkoutStates.shippingAddressRequired.shippingMethodRequired)),
+      [EDIT_STATE.SHIPPING]: !!(window.reviewOrderJSON.output.checkoutStates && (window.reviewOrderJSON.output.checkoutStates.contactInfoRequired)),
       [EDIT_STATE.PAYMENT]: !!(window.reviewOrderJSON.output.checkoutStates && window.reviewOrderJSON.output.checkoutStates.paymentRequired),
     },
   };
   const store = configureStore(initialState, {
-    orderDetails, cqContent, customerAgreement, asyncCallStatus, applePayAvailable, notification, editState, storeDetails, cyberSourceData,
+    orderDetails, cqContent, customerAgreement, asyncCallStatus, applePayAvailable, notification, editState, storeDetails,
   });
 
   injectTapEventPlugin(); // Instant TapEvents for React http://facebook.github.io/react/

@@ -4,7 +4,7 @@ import ShippingAddressEdit from '../../components/shipping/shippingAddressEdit';
 import * as actionCreators from '../../actions';
 import * as NotificationActions from '../../../common/NotificationBar/actions';
 
-const getSelectedShippingInfo = (data, ispuChangeToShip) => {
+const getSelectedShippingInfo = (data) => {
   const { selectedShippingType } = data;
 
   let shippingOptionDetails = null;
@@ -17,7 +17,7 @@ const getSelectedShippingInfo = (data, ispuChangeToShip) => {
   }
   return {
     shippingType: shippingOptionDetails ? shippingOptionDetails.shippingOptionId : null,
-    shippingAddressType: (selectedShippingType.type === 'SHIPPING' || ispuChangeToShip) ? 'shipToMe' : 'ISPU',
+    shippingAddressType: (selectedShippingType.type === 'SHIPPING') ? 'shipToMe' : 'ISPU',
   };
 };
 
@@ -26,16 +26,13 @@ function mapStateToProps(state) {
   const cqContent = state.get('cqContent').toJS();
   const asyncCallStatus = state.get('asyncCallStatus');
   const form = state.get('form').toJS().shippingAddress;
-  const ispuContactInfoForm = state.get('form').toJS().ispuContactInfo;
-  const ispuChangeToShip = (ispuContactInfoForm && ispuContactInfoForm.values ? (ispuContactInfoForm.values.shippingAddressType === 'shipToMe' && data.selectedShippingType.type === 'ISPU') : false);
-  const selectedShippingInfo = getSelectedShippingInfo(data, ispuChangeToShip);
+  const selectedShippingInfo = getSelectedShippingInfo(data);
   const selectedPaymentMode = data.billingInfo ? data.billingInfo.selectedPaymentMode.toLowerCase() : '';
   return {
     cqContent,
     states: data.states,
     contactInfo: data.shippingInfo.contactInfo,
-    shippingAddressRequired: data.checkoutStates.shippingAddressRequired,
-    shippingAddressChangeRequired: data.checkoutStates.shippingAddressChangeRequired,
+    checkoutStates: data.checkoutStates,
     asyncCallStatus,
     initialValues: {
       ...data.shippingInfo.addressInfo,
@@ -50,7 +47,7 @@ function mapStateToProps(state) {
     loginMTN: data.loginMTN,
     billingAddress: data.billingInfo.billingAddress,
     ispuEligibleFlag: data.shippingInfo && data.shippingInfo.ispuEligibleFlag && selectedPaymentMode !== 'applepay' && selectedPaymentMode !== 'paypal' && (data.shippingInfo.contactInfo.activeSMSCapableMtnList ? data.shippingInfo.contactInfo.activeSMSCapableMtnList.length > 0 : false),
-    ispuChangeToShip,
+    addressInfo: data.shippingInfo.addressInfo,
   };
 }
 function mapDispatchToProps(dispatch) {

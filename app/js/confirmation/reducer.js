@@ -1,27 +1,46 @@
-/*
- *
- * Confirmation reducer
- *
- */
-
 import { fromJS } from 'immutable';
-import {
-  CN_ACTION_DONE,
-  CN_ACTION_NOT_NOW,
-  CN_ACTION_LEARN_HOW,
-} from './constants';
 
-export function confirmationReducer(state, action) {
+export const cqContent = (state = {}, action) => {
+  const immutableCQContent = fromJS({ label: {}, error: {}, html: {} });
   switch (action.type) {
-    case CN_ACTION_DONE:
-      return state.merge(fromJS(action.data.output));
-    case CN_ACTION_NOT_NOW:
-      return state.merge(fromJS(action.data.output));
-    case CN_ACTION_LEARN_HOW:
-      return state.merge(fromJS(action.data.output));
+    default:
+      return immutableCQContent.mergeDeep(state);
+  }
+};
+
+export const billingInfo = (state = {}, action) => {
+  switch (action.type) {
     default:
       return state;
   }
-}
-
-export default confirmationReducer;
+};
+export const devices = (state = {}, action) => {
+  switch (action.type) {
+    default:
+      return state;
+  }
+};
+export const plans = (state = {}, action) => {
+  switch (action.type) {
+    default:
+      return state;
+  }
+};
+export const selectedShippingType = (state = {}, action) => {
+  switch (action.type) {
+    default:
+      return state;
+  }
+};
+export const shippingInfo = (state = {}, action) => {
+  switch (action.type) {
+    default:
+      return state;
+  }
+};
+export const orderDetails = (state = {}, action) => {
+  switch (action.type) {
+    default:
+      return state;
+  }
+};

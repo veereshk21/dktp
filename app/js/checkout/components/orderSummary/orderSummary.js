@@ -10,21 +10,6 @@ import NotificationBar from '../../../common/NotificationBar';
 import NortonSeal from '../../../../images/norton_secure_seal.svg';
 
 class OrderSummary extends Component {
-  static propTypes = {
-    cqContent: PropTypes.object,
-    checkoutEnabled: PropTypes.bool,
-    cartDetailURL: PropTypes.string,
-    placeOrder: PropTypes.func,
-    submitOrderURL: PropTypes.string,
-    optInShippingSMS: PropTypes.bool,
-    optInMtn: PropTypes.string,
-    optInPaperFree: PropTypes.bool,
-    standaloneAccessories: PropTypes.bool,
-    buddyUpgrade: PropTypes.bool,
-    orderId: PropTypes.string,
-    cancelOrder: PropTypes.func,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -33,8 +18,47 @@ class OrderSummary extends Component {
   }
 
   onPlaceOrder = () => {
-    const { buddyUpgrade } = this.props;
-    if (buddyUpgrade) {
+    const { cqContent, showErrorNotification, addressInfo, checkoutStates } = this.props;
+    const scrollProps = { block: 'start', inline: 'nearest', behavior: 'smooth' };
+    if (!this.props.checkoutEnabled) {
+      if (!this.props.shippingCompleted) {
+        if (!this.props.ispuSelected) {
+          // Shipping Address Error Messages
+          if (checkoutStates.poBoxShippingAddress) {
+            // PO BOX Address
+            showErrorNotification(cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_PO_BOX_ERROR);
+          } else if (checkoutStates.shippingAddressValidationError) {
+            // Generic Validation Error
+            showErrorNotification(cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_VALIDATION_ERROR);
+          } else if (checkoutStates.contactInfoRequired) {
+            if (!addressInfo.email && !addressInfo.phoneNumber) {
+              showErrorNotification(cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_INVALID_EMAIL_AND_PHONE_NUMBER_ERROR);
+            } else if (!addressInfo.email) {
+              // Missing Email Address
+              showErrorNotification(cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_INVALID_EMAIL_ERROR);
+            } else if (!addressInfo.phoneNumber) {
+              // Missing Phone Number
+              showErrorNotification(cqContent.error.DT_OD_CHECKOUT_SHIPPING_ADDRESS_INVALID_PHONE_NUMBER_ERROR);
+            }
+          } else {
+            this.props.showErrorNotification(this.props.cqContent.error.DT_OD_CHECKOUT_ORDER_SUMMARY_SECTION_ERROR);
+          }
+        } else {
+          // ISPU Error Messages
+          this.props.showErrorNotification(this.props.cqContent.error.DT_OD_CHECKOUT_ORDER_SUMMARY_SECTION_ERROR);
+        }
+        document.getElementById('shippingSection').scrollIntoView(scrollProps);
+      } else if (!this.props.paymentCompleted) {
+        this.props.showErrorNotification(this.props.cqContent.error.DT_OD_CHECKOUT_ORDER_SUMMARY_SECTION_ERROR);
+        document.getElementById('paymentSection').scrollIntoView(scrollProps);
+      } else if (!this.props.devicesCompleted) {
+        this.props.showErrorNotification(this.props.cqContent.error.DT_OD_CHECKOUT_ORDER_SUMMARY_SECTION_ERROR);
+        document.getElementById('devicesSection').scrollIntoView(scrollProps);
+      } else if (!this.props.termsCompleted) {
+        showErrorNotification(cqContent.error.DT_OD_CHECKOUT_ORDER_SUMMARY_SECTION_ERROR);
+        document.getElementById('agreementSection').scrollIntoView(scrollProps);
+      }
+    } else if (this.props.buddyUpgrade) {
       this.showBuddyModal();
     } else {
       this.submitOrder();
@@ -63,16 +87,18 @@ class OrderSummary extends Component {
     const {
       cqContent,
       cartDetailURL,
+      notification,
     } = this.props;
-
     const readTermsLink = `<a class="link" href="javascript:document.getElementById('agreementSection').scrollIntoView({ behavior: 'smooth' })">${cqContent.label.DT_OD_CHECKOUT_SUMMARY_READ_TERMS_LINK}</a>`;
-
     return (
       <div>
         {this.state.showBuddyModal &&
           <BuddyModal cqContent={cqContent} closeBuddyModal={this.closeBuddyModal} submitOrder={this.submitOrder} cancelOrder={this.cancelOrder} />
         }
-        <Sticky bottomBoundary="#app">
+        <Sticky
+          bottomBoundary="#app"
+          top={notification.height}
+        >
           <NotificationBar section={NOTIFICATIONS.SUMMARY} />
           <div className="pad24">
             {/* Header */}
@@ -108,7 +134,6 @@ class OrderSummary extends Component {
               <div className="margin24 noSideMargin clearfix">
                 <button
                   className="button primary"
-                  disabled={!this.props.checkoutEnabled}
                   onClick={this.onPlaceOrder}
                 >
                   {cqContent.label.DT_OD_CHECKOUT_PLACE_ORDER_CTA}
@@ -123,5 +148,29 @@ class OrderSummary extends Component {
     );
   }
 }
+
+OrderSummary.propTypes = {
+  cqContent: PropTypes.object,
+  checkoutEnabled: PropTypes.bool,
+  cartDetailURL: PropTypes.string,
+  placeOrder: PropTypes.func,
+  submitOrderURL: PropTypes.string,
+  optInShippingSMS: PropTypes.bool,
+  optInMtn: PropTypes.string,
+  optInPaperFree: PropTypes.bool,
+  standaloneAccessories: PropTypes.bool,
+  buddyUpgrade: PropTypes.bool,
+  orderId: PropTypes.string,
+  cancelOrder: PropTypes.func,
+  showErrorNotification: PropTypes.func,
+  termsCompleted: PropTypes.bool,
+  shippingCompleted: PropTypes.bool,
+  paymentCompleted: PropTypes.bool,
+  devicesCompleted: PropTypes.bool,
+  notification: PropTypes.object,
+  addressInfo: PropTypes.object,
+  checkoutStates: PropTypes.object,
+  ispuSelected: PropTypes.bool,
+};
 
 export default OrderSummary;

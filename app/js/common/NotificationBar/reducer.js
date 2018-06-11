@@ -58,6 +58,7 @@ const notificationInitState = {
   notifications: [],
   currentPage: '',
   section: 'page-header',
+  height: 0,
 };
 
 export const notification = (state = notificationInitState, action) => {
@@ -76,6 +77,7 @@ export const notification = (state = notificationInitState, action) => {
         isNotificationVisible: false,
         message: '',
         notifications: clearPageNotification(state),
+        height: 0,
       });
 
     case 'common/SHOW_NOTIFICATION_CTA':
@@ -87,6 +89,9 @@ export const notification = (state = notificationInitState, action) => {
 
     case 'common/CHECK_NOTIFICATION':
       return Object.assign({}, state, checkPageNotification(action.data.pageName, state.notifications));
+
+    case 'common/SET_HEIGHT':
+      return { ...state, height: action.data.height };
 
     default:
       return state;

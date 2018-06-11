@@ -46,14 +46,14 @@ const validate = (values, props) => {
         errors[`amountToApply_${index}`] = cqError.DT_OD_CHECKOUT_GIFT_CARD_EXCEED_BALANCE;
       } else if (parseFloat(amountToApply) > parseFloat(dueToday)) {
         errors[`amountToApply_${index}`] = cqError.DT_OD_CHECKOUT_GIFT_CARD_EXCEED_AMOUNT_DUE;
-      } else if (amountToApply && !(/^[+-]?[0-9]{1,3}(?:,?[0-9]{3})*(?:\.[0-9]{2})?$/i.test(amountToApply))) {
+      } else if (amountToApply && !(/^[+-]?[0-9]{1,3}(?:,?[0-9]{3})*(?:\.[0-9]{1,2})?$/i.test(amountToApply))) {
         errors[`amountToApply_${index}`] = cqError.DT_OD_CHECKOUT_TEXT_FIELD_GENERIC_ERRROR;
       }
 
       // Balance
       if (!balance) {
         errors[`balance_${index}`] = cqError.DT_OD_CHECKOUT_FORM_FIELD_REQUIRED_TEXT;
-      } else if (balance && !(/^[+-]?[0-9]{1,3}(?:,?[0-9]{3})*(?:\.[0-9]{2})?$/i.test(balance))) {
+      } else if (balance && !(/^[+-]?[0-9]{1,3}(?:,?[0-9]{3})*(?:\.[0-9]{1,2})?$/i.test(balance))) {
         errors[`balance_${index}`] = cqError.DT_OD_CHECKOUT_TEXT_FIELD_GENERIC_ERRROR;
       }
     }

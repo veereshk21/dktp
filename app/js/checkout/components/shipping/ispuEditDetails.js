@@ -2,16 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
 import { Field, reduxForm } from 'redux-form/immutable';
-import StoreDetails from './storeDetails';
 import { EDIT_STATE } from '../../constants';
 import * as validation from '../../../common/validation';
 import MSelect from '../../../common/Select/index';
-import RadioButton from '../../../common/RadioButton/index';
 import { renderTextField } from '../../../common/TextField/';
-import AsyncComponent from '../../../common/AsyncComponent';
-
-const Modal = AsyncComponent(() => import('../../../common/Modal'));
-const InStorePickUp = AsyncComponent(() => import('../../containers/ispu'));
 
 const validate = (values, props) => {
   const errors = {};
@@ -30,12 +24,6 @@ const validate = (values, props) => {
 };
 
 class ISPUDetails extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ispuModalVisible: false,
-    };
-  }
   onCancel = () => this.props.updateEditState(EDIT_STATE.SHIPPING, false);
 
   updateISPU = (data) => {
@@ -51,81 +39,17 @@ class ISPUDetails extends Component {
       standaloneAccessories: this.props.standaloneAccessories,
       longitude: ispudetailsInfo.longtitude.toString(),
       latitude: ispudetailsInfo.latitdude.toString(),
+      shipOptionChangeOnly: true,
     };
     this.props.submitISPU(param);
   };
 
-  showIspuModal = () => {
-    this.setState({ ispuModalVisible: true });
-    this.props.asyncFetch();
-  }
-
-  closeIspuModal = () => {
-    this.setState({ ispuModalVisible: false });
-  }
-  ispuSuccessful = () => {
-    this.setState({ ispuModalVisible: false });
-  }
-
   render() {
-    const { cqContent, activeSMSCapableMtnList, ispudetailsInfo } = this.props;
+    const { cqContent, activeSMSCapableMtnList } = this.props;
     return (
       <div>
-        {this.state.ispuModalVisible &&
-          <Modal
-            mounted
-            closeFn={this.closeIspuModal}
-            showCloseX
-            underlayColor="rgba(0,0,0,0.8)"
-          >
-            <InStorePickUp
-              closeModal={this.ispuSuccessful}
-            />
-          </Modal>
-        }
-        <div className="margin18 onlyBottomMargin">
-          <div className="pad6 noSidePad">
-            <RadioButton
-              name="shippingAddressType"
-              id="shippingAddressTypeShipToMe"
-              value="shipToMe"
-              containerClassName=" "
-              labelClassName="verticalCenter pad12 onlyLeftPad"
-            >
-              <p>{cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_SHIP_TO_ADDRESS}</p>
-            </RadioButton>
-          </div>
-          <div className="pad6 noSidePad">
-
-            <RadioButton
-              name="shippingAddressType"
-              id="shippingAddressTypeISPU"
-              value="ISPU"
-              containerClassName=" "
-              labelClassName="verticalCenter pad12 onlyLeftPad"
-            >
-              <p>{cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_PICK_UP_STORE}</p>
-            </RadioButton>
-          </div>
-        </div>
-        <Row className="border_grayThree onlyBottomBorder pad12 onlyBottomPad">
-          <Col
-            xs={6}
-            className="border_grayThree onlyRightBorder"
-            style={{ paddingRight: 18, wordWrap: 'break-word' }}
-          >
-            <StoreDetails
-              cqContent={cqContent}
-              edit={this.props.editState[EDIT_STATE.SHIPPING]}
-              updateEditState={this.props.updateEditState}
-              ispudetailsInfo={ispudetailsInfo}
-              showIspuModal={this.showIspuModal}
-            />
-          </Col>
-          <Col
-            xs={6}
-            style={{ paddingLeft: 18 }}
-          >
+        <Row>
+          <Col xs={6}>
             <div>
               <Field
                 component={renderTextField}
@@ -157,13 +81,8 @@ class ISPUDetails extends Component {
             </div>
           </Col>
         </Row>
-        <div className="width100 margin24 onlyTopMargin clearfix">
-          <button
-            className="fontSize_3 link background_transparent displayInlineBlock margin15 borderSize_0"
-            onClick={this.onCancel}
-          >
-            {cqContent.label.DT_OD_CHECKOUT_PAYMENT_CANCEL}
-          </button>
+        <div className="width100 margin40 onlyTopMargin clearfix">
+
           <button
             className="primary button large"
             type="submit"
@@ -177,6 +96,15 @@ class ISPUDetails extends Component {
             {cqContent.label.DT_OD_CHECKOUT_SHIPPING_ADDRESS_BUTTON_TEXT}
           </button>
 
+          {!this.props.checkoutStates.contactInfoRequired &&
+            <button
+              className="secondary button large margin10 onlyLeftMargin"
+              onClick={this.onCancel}
+            >
+              {cqContent.label.DT_OD_CHECKOUT_SHIPPING_ISPU_DETAILS_CANCEL}
+            </button>
+          }
+
         </div>
       </div>
     );
@@ -186,8 +114,6 @@ class ISPUDetails extends Component {
 ISPUDetails.propTypes = {
   cqContent: PropTypes.object,
   updateEditState: PropTypes.func,
-  ispudetailsInfo: PropTypes.object,
-  editState: PropTypes.object,
   contactInfo: PropTypes.object, // eslint-disable-line
   activeSMSCapableMtnList: PropTypes.array,
   valid: PropTypes.bool,
@@ -196,11 +122,13 @@ ISPUDetails.propTypes = {
   orderId: PropTypes.string,
   standaloneAccessories: PropTypes.bool,
   submitISPU: PropTypes.func,
-  asyncFetch: PropTypes.func,
+  checkoutStates: PropTypes.object,
+  ispudetailsInfo: PropTypes.object,
 };
 
 export default reduxForm({
   form: 'ispuContactInfo',
+  enableReinitialize: true,
   destroyOnUnmount: false,
   validate,
 })(ISPUDetails);

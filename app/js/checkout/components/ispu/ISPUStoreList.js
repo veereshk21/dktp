@@ -15,17 +15,17 @@ export default class ISPUStoreList extends Component {
   calculateAvailability = (store) => (
     store.deviceAvailable ?
       <Col xs={12} className="bold arrowCTA fontSize_6">{this.props.cqContent.label.DT_OD_CHECKOUT_STORE_AVAILABLE_TEXT}</Col> :
-      <Col xs={12} className="color_959595 fontSize_6">{this.props.cqContent.label.DT_OD_CHECKOUT_STORE_NOT_AVAILABLE_TEXT}</Col>
+      <Col xs={12} className="color_959595 fontSize_5">{this.props.cqContent.label.DT_OD_CHECKOUT_STORE_NOT_AVAILABLE_TEXT}</Col>
   )
 
   createListOfStores = () => {
     const { cqContent } = this.props;
-    return this.props.storeList.map((store, index) => (
+    return this.props.storeList.map((store) => (
       <Row className="border_grayThree onlyBottomBorder" key={store.storeId}>
         <Col xs={12}>
           <Row className="pad12 onlyBottomPad">
             <Col xs={12}>
-              <span className="fontSize_8 bold">{index + 1} {store.storeName}</span>
+              <span className="fontSize_8 bold">{store.storeName}</span>
             </Col>
           </Row>
           <Row className="pad12 onlyBottomPad">

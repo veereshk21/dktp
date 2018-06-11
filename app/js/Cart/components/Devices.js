@@ -36,9 +36,9 @@ class Devices extends Component {
 
   render() {
     const {
-      cqContent, deviceInfo, protectionURL, cpcSucessful, tmpMd,
+      cqContent, deviceInfo, protectionURL, cpcSucessful, tmpMd, authenticated,
     } = this.props;
-
+    const additionalParam = !authenticated ? '&uc=true&editProtection=true' : '';
     const getSbdOfferPrice = () => (deviceInfo.sbdOffer &&
       <div>
         <span className="bold">${deviceInfo.sbdOffer.sbdItemMonthlyAmount}</span><br />
@@ -67,6 +67,14 @@ class Devices extends Component {
           <span className="bold">{deviceInfo.price ? '$' + deviceInfo.price : '--'}</span>
         }
       </div>
+    );
+
+    const isUpgradeFeeWaivedOffer = !!(
+      deviceInfo.devicePromotionList &&
+      deviceInfo.devicePromotionList.length > 0 &&
+      deviceInfo.devicePromotionList.find((offer) => (
+        offer.promoAmount !== null && parseFloat(offer.promoAmount) > 0 && offer.isUpgradeFeeWaivedOffer
+      ))
     );
 
     return (
@@ -104,24 +112,30 @@ class Devices extends Component {
               {deviceInfo.colorName && <span>{deviceInfo.colorName}</span>}
             </div>
 
-            {deviceInfo.sbdOffer &&
+            {deviceInfo.sbdOffer && deviceInfo.sbdOffer.promoBadgeMessages && deviceInfo.sbdOffer.promoBadgeMessages.length > 0 &&
               <Row>
                 <Col md={7} className="margin18 onlyTopMargin">
-                  <div className="clearfix positionRelative color_blue">
-                    <span className="fontSize_3" dangerouslySetInnerHTML={{ __html: deviceInfo.sbdOffer.sbdHeaderMsgHTML }} />
+                  <div className="clearfix positionRelative">
+                    <span className="fontSize_3 color_blue bold" dangerouslySetInnerHTML={{ __html: deviceInfo.sbdOffer.promoBadgeMessages[0].badgeText }} />
+                    <ToolTip
+                      id="upgradeFee-tooltip"
+                      className="margin3 onlyLeftMargin displayInlineBlock"
+                      ariaLabel="Upgrade fee information tooltip"
+                      text={deviceInfo.sbdOffer.promoBadgeMessages[0].badgeToolTip}
+                      noRenderHTML
+                    />
                   </div>
                 </Col>
               </Row>
             }
-
             {deviceInfo.humCarDetails &&
-            <p className="margin6 onlyTopMargin" >
-              <span className="">{deviceInfo.humCarDetails.year}</span>
-              <span className="pad3  onlyLeftPad">{deviceInfo.humCarDetails.make}</span>
-              <span className="pad3  onlyLeftPad">{deviceInfo.humCarDetails.model}</span>
-              <span className="pad3  onlyLeftPad">-</span>
-              <span className="pad3  onlyLeftPad">{deviceInfo.humCarDetails.color}</span>
-            </p>
+              <p className="margin6 onlyTopMargin" >
+                <span className="">{deviceInfo.humCarDetails.year}</span>
+                <span className="pad3  onlyLeftPad">{deviceInfo.humCarDetails.make}</span>
+                <span className="pad3  onlyLeftPad">{deviceInfo.humCarDetails.model}</span>
+                <span className="pad3  onlyLeftPad">-</span>
+                <span className="pad3  onlyLeftPad">{deviceInfo.humCarDetails.color}</span>
+              </p>
             }
 
 
@@ -188,13 +202,13 @@ class Devices extends Component {
                   <Col md={7} lg={7}>
                     <p className="bold">{deviceInfo.priceText}</p>
                     <p dangerouslySetInnerHTML={{ __html: deviceInfo.priceSubTitle }} />
-                    {deviceInfo.sbdOffer && <span>{deviceInfo.sbdOffer.sbdPromoMsg}</span>}
                   </Col>
                   <Col md={5} lg={5}>
                     <Row>
                       <Col md={6} lg={6}>
                         <div className="textAlignCenter">
-                          {deviceInfo.sbdOffer && getSbdOfferPrice()}
+                          {deviceInfo.sbdOffer && !deviceInfo.sbdOffer.ignorePricing && getSbdOfferPrice()}
+                          {deviceInfo.sbdOffer && deviceInfo.sbdOffer.ignorePricing && getMonthlyPrice()}
                           {!deviceInfo.sbdOffer && deviceInfo.hasReducedDueMonthly && getReducedDueMonthly()}
                           {!deviceInfo.sbdOffer && !deviceInfo.hasReducedDueMonthly && deviceInfo.bicOfferApplied && getBICPrice()}
                           {!deviceInfo.sbdOffer && !deviceInfo.hasReducedDueMonthly && !deviceInfo.bicOfferApplied && getMonthlyPrice()}
@@ -297,7 +311,29 @@ class Devices extends Component {
                 ))}
               </div>}
 
-              {deviceInfo.upgradeFee > 0 &&
+              {deviceInfo.devicePromotionList && deviceInfo.devicePromotionList.map((offer, id) => (
+                (offer.promoAmount !== null && parseFloat(offer.promoAmount) > 0 && offer.isUpgradeFeeWaivedOffer) &&
+                <Row className="margin12 onlyTopMargin" key={id}>
+                  <Col md={7} lg={7}>
+                    <span>{cqContent.label.DT_OD_CART_WAIVED_UPGRADE_FEE_TEXT}</span>
+                  </Col>
+                  <Col md={5} lg={5}>
+                    <Row>
+                      <Col md={6} lg={6}>
+                        <div className="textAlignCenter bold"><span>--</span></div>
+                      </Col>
+                      <Col md={6} lg={6}>
+                        <div>
+                          <div className="textAlignCenter bold"><span>${deviceInfo.upgradeFee}</span></div>
+                          <div className="textAlignCenter textDecLineThrough"><span>${deviceInfo.originalUpgradeFee}</span></div>
+                        </div>
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+              ))}
+
+              {!isUpgradeFeeWaivedOffer && deviceInfo.flow === 'EUP' &&
                 <Row className="margin12 onlyTopMargin">
                   <Col md={7} lg={7}>
                     <span>{cqContent.label.DT_OD_CART_UPGRADE_FEE_TEXT}(${deviceInfo.upgradeFee})</span>
@@ -321,7 +357,9 @@ class Devices extends Component {
                   </Col>
                 </Row>
               }
-              {tmpMd && deviceInfo.flow !== 'NSO' &&
+
+              {/* Existing TAP users who took additional coverage */}
+              {tmpMd && deviceInfo.flow !== 'NSO' && deviceInfo.protectionOption && deviceInfo.protectionOption.featureType === 'SPO' &&
                 <div className="margin18 onlyTopMargin">
                   <Row>
                     <Col md={7} lg={7}>
@@ -330,7 +368,7 @@ class Devices extends Component {
                         name="protectionOptionForm"
                         id="protectionOptionForm"
                         method="POST"
-                        action={protectionURL + '?ts=' + Date.now() + '&deviceProdId=' + deviceInfo.deviceProdId + '&deviceSkuId=' + deviceInfo.deviceSkuId}
+                        action={protectionURL + '?ts=' + Date.now() + '&deviceProdId=' + deviceInfo.deviceProdId + '&deviceSkuId=' + deviceInfo.deviceSkuId + additionalParam}
                       >
                         <div>
                           <div className="margin5 onlyTopMargin">
@@ -364,7 +402,7 @@ class Devices extends Component {
                       <Row>
                         <Col md={6} lg={6}>
                           <div className="textAlignCenter bold">
-                            {!tmpMd.hideEditProtection && this.props.index === 1 ?
+                            {!tmpMd.hideEditProtection && this.props.tapExistIndex === 1 ?
                               <span>${tmpMd.price}</span>
                               :
                               <span>--</span>
@@ -379,7 +417,66 @@ class Devices extends Component {
                   </Row>
                 </div>
               }
-              {deviceInfo.protectionOption && deviceInfo.protectionOption !== null && !tmpMd &&
+              {/* TAP Eligible users users who may or may not taken additional coverage */}
+              {tmpMd && deviceInfo.flow !== 'NSO' && !deviceInfo.protectionOption &&
+                <div className="margin18 onlyTopMargin">
+                  <Row>
+                    <Col md={7} lg={7}>
+                      <span className="bold">{cqContent.label.DT_OD_CART_EQUIPMENT_PROTECTION_TEXT}</span>
+                      <form
+                        name="protectionOptionForm"
+                        id="protectionOptionForm"
+                        method="POST"
+                        action={protectionURL + '?ts=' + Date.now() + '&deviceProdId=' + deviceInfo.deviceProdId + '&deviceSkuId=' + deviceInfo.deviceSkuId + additionalParam}
+                      >
+                        <div>
+                          <div className="margin5 onlyTopMargin">
+                            {tmpMd.name}
+                            <span className="pad5 onlyLeftPad relative">
+                              {(!tmpMd.hideEditProtection &&
+                                <input
+                                  className="background_transparent noPad borderSize_0 textDecUnderline fontSize_4"
+                                  type="submit"
+                                  value="Edit"
+                                />
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                        <input type="hidden" name="sfoskuId" value={tmpMd.featureSkuId} />
+                        <input type="hidden" name="deviceSkuId" value={deviceInfo.deviceSkuId} />
+                        <input type="hidden" name="mtn" value={deviceInfo.mtn} />
+                        <input type="hidden" name="upgradeDeviceMTN" value={deviceInfo.mtn} />
+                        {deviceInfo.flow === 'AAL' ?
+                          <input type="hidden" name="deviceSORId" value={deviceInfo.deviceSORId} />
+                          :
+                          <input type="hidden" name="upgradeDeviceSORId" value={deviceInfo.deviceSORId} />
+                        }
+                        <input type="hidden" name="editFlag" value="true" />
+                        <input type="hidden" name="commerceItemId" value={deviceInfo.commerceItemId} />
+                        <input type="hidden" name="flow" value={deviceInfo.flow} />
+                      </form>
+                    </Col>
+                    <Col md={5} lg={5}>
+                      <Row>
+                        <Col md={6} lg={6}>
+                          <div className="textAlignCenter bold">
+                            {!tmpMd.hideEditProtection && this.props.tapIndex === 1 ?
+                              <span>${tmpMd.price}</span>
+                              :
+                              <span>--</span>
+                            }
+                          </div>
+                        </Col>
+                        <Col md={6} lg={6}>
+                          <div className="textAlignCenter bold"><span>--</span></div>
+                        </Col>
+                      </Row>
+                    </Col>
+                  </Row>
+                </div>
+              }
+              {deviceInfo.protectionOption && deviceInfo.protectionOption !== null && ((deviceInfo.protectionOption && deviceInfo.protectionOption.featureType === 'INS') || !tmpMd) &&
                 <div>
                   <div className="margin18 onlyTopMargin">
                     <Row>
@@ -393,7 +490,7 @@ class Devices extends Component {
                             method="POST"
                             action={protectionURL + '?ts=' + Date.now() +
                               '&deviceProdId=' + deviceInfo.deviceProdId +
-                              '&deviceSkuId=' + deviceInfo.deviceSkuId}
+                              '&deviceSkuId=' + deviceInfo.deviceSkuId + additionalParam}
                           >
                             <div className="floatLeft col span_4_of_5">
                               {(deviceInfo.protectionOption.featureType !== 'SPO') &&
@@ -510,30 +607,30 @@ class Devices extends Component {
             }
 
             {deviceInfo.flow === 'NSO' && deviceInfo.simDetails !== null &&
-            <div className="margin18 onlyTopMargin ">
-              <Row>
-                <Col md={7} lg={7}>
-                  <div>
-                    <p className="bold">{cqContent.label.DT_OD_SIM_CART_TEXT}</p>
-                    <p>{deviceInfo.simDetails.displayName}</p>
-                  </div>
-                </Col>
-                <Col md={5} lg={5}>
-                  <Row>
-                    <Col md={6} lg={6}>
-                      <div className="textAlignCenter bold">
-                        <span>--</span>
-                      </div>
-                    </Col>
-                    <Col md={6} lg={6}>
-                      <div className="textAlignCenter bold">
-                        <span>FREE</span>
-                      </div>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </div>
+              <div className="margin18 onlyTopMargin ">
+                <Row>
+                  <Col md={7} lg={7}>
+                    <div>
+                      <p className="bold">{cqContent.label.DT_OD_SIM_CART_TEXT}</p>
+                      <p>{deviceInfo.simDetails.displayName}</p>
+                    </div>
+                  </Col>
+                  <Col md={5} lg={5}>
+                    <Row>
+                      <Col md={6} lg={6}>
+                        <div className="textAlignCenter bold">
+                          <span>--</span>
+                        </div>
+                      </Col>
+                      <Col md={6} lg={6}>
+                        <div className="textAlignCenter bold">
+                          <span>FREE</span>
+                        </div>
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+              </div>
             }
 
             {deviceInfo.flow === 'NSO' && deviceInfo.displayImeiId !== null &&
@@ -588,6 +685,8 @@ Devices.propTypes = {
   clearCart: PropTypes.func,
   removeDevice: PropTypes.func,
   tmpMd: PropTypes.object,
-  index: PropTypes.number,
+  tapIndex: PropTypes.number,
+  tapExistIndex: PropTypes.number,
+  authenticated: PropTypes.bool,
 };
 export default Devices;

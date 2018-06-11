@@ -15,37 +15,31 @@ const OrderSummary = AsyncComponent(() => import('./../containers/OrderSummary')
 const ContinueShoppingModal = AsyncComponent(() => import('./ContinueShoppingModal'));
 const ClearCartModal = AsyncComponent(() => import('./ClearCartModal'));
 class Index extends Component {
-  state = {
-    showLandingModal: true,
+  constructor(props) {
+    super(props);
+    this.onToggleClearCartModal = this.onToggleClearCartModal.bind(this);
+    this.onToggleLandingModal = this.onToggleLandingModal.bind(this);
+    this.onToggleContinueShopping = this.onToggleContinueShopping.bind(this);
+    this.continueShoppingHandler = this.continueShoppingHandler.bind(this);
   }
-
-  componentDidMount() {
-    /*
-    FETCH RECOMMENDED ACCESSORIES
-     */
-    if (this.props.accessoryGWURL) this.props.getRecommendedAcc(this.props.accessoryGWURL);
-
-    window.hideLoader();
-  }
-
   /*
    TOGGLE CLEAR CART MODAL
    */
-  onToggleClearCartModal = () => {
+  onToggleClearCartModal() {
     this.props.toggleModal('ClearCart');
   }
 
   /*
     TOGGLE LANDING MODAL
    */
-  onToggleLandingModal = () => {
+  onToggleLandingModal() {
     this.props.toggleModal('LandingModal');
   }
 
   /*
   TOGGLE CONTINUE SHIPPING
    */
-  onToggleContinueShopping = (evt) => {
+  onToggleContinueShopping(evt) {
     evt.preventDefault();
     this.props.toggleModal('ContinueShopping');
   }
@@ -59,7 +53,7 @@ class Index extends Component {
     window.location = this.props.tradeInUrl;
   }
 
-  continueShoppingHandler = (flow) => {
+  continueShoppingHandler(flow) {
     const { aalUrl, eupUrl, byodUrl } = this.props; //eslint-disable-line
     const gwUrl = '/od/smartphones/'; // fallout redirection
     if (flow === 'aal') {
@@ -70,12 +64,95 @@ class Index extends Component {
       window.location = byodUrl || '/od/cust/auth/shop?flow=NSO';
     }
   }
+  componentDidMount() {//eslint-disable-line
+    /*
+     FETCH RECOMMENDED ACCESSORIES
+     */
+    if (this.props.accessoryGWURL) this.props.getRecommendedAcc(this.props.accessoryGWURL);
+    window.hideLoader();
+    //
+    const { authInfo, masterpass3DSecure, handle3dPaymentValidated, cqContent } = this.props;
 
+    // Checking for Cardinal's 3D Secure JS
+    if (window.Cardinal) {
+      // 3D Secure initialization and registering Event Handlers
+      if (authInfo) {
+        try {
+          window.Cardinal.configure({
+            logging: {
+              level: 'verbose',
+            },
+          });
+
+          window.Cardinal.setup('init', {
+            jwt: authInfo.clients.CARDINAL3DSECURE.token,
+          });
+
+          window.Cardinal.on('payments.setupComplete', () => {
+            // eslint-disable-next-line no-console
+            console.log('Cardinal setup Complete');
+            window.cardinalInit = true;
+            // Trigger 3D Secure flow for Masterpass card, exisitng cards are handled in the actions.js
+            if (masterpass3DSecure) {
+              window.Cardinal.continue(
+                'cca',
+                {
+                  AcsUrl: masterpass3DSecure.acsUrl,
+                  Payload: masterpass3DSecure.payload,
+                },
+                {
+                  OrderDetails: {
+                    TransactionId: masterpass3DSecure.transId,
+                  },
+                }
+              );
+            }
+          });
+
+          window.Cardinal.on('payments.validated', (data, jwt) => {
+            // eslint-disable-next-line no-console
+            console.log('Trigger::: ChoosePaymentMethod RD', data);
+
+            if (typeof data.Payment !== 'undefined' && data.Payment.Type !== undefined) {
+              switch (data.ActionCode) {
+                case 'SUCCESS': // Handle successful authentication scenario and validate the signature on the JWT
+                  // eslint-disable-next-line no-console
+                  console.log('Trigger::: ChoosePaymentMethod RD ::: SUCCESS');
+                  handle3dPaymentValidated(data, jwt);// dispatches handle3dPaymentValidated action
+                  break;
+
+                case 'NOACTION': // Handle unenrolled scenario
+                  // eslint-disable-next-line no-console
+                  console.log('Trigger::: ChoosePaymentMethod RD :: NOACTION');
+                  handle3dPaymentValidated(data, jwt);
+                  break;
+
+                case 'FAILURE': // Handle authentication failed or error encounter scenario
+                  // eslint-disable-next-line no-console
+                  console.log('FAILURE');
+                  this.props.showErrorNotification(cqContent.error.DT_OD_CART_PAYMENT_3D_SECURE_FAILURE);
+                  break;
+
+                case 'ERROR': // Handle service level error
+                  // eslint-disable-next-line no-console
+                  console.log('ERROR');
+                  this.props.showErrorNotification(cqContent.error.DT_OD_CART_PAYMENT_3D_SECURE_FAILURE);
+                  break;
+
+                default:
+                  break;
+              }
+            }
+          });
+        } catch (e) {
+          // An error occurred
+          // eslint-disable-next-line no-console
+          console.log((window.Cardinal === undefined ? 'Cardinal Cruise did not load properly. ' : 'Cardinal :::: An error occurred during processing. ') + e);
+        }
+      }
+    }
+  }
   render() {
-    // const {
-    //   cqContent, totalItems, asyncCallStatus, cartMessages, emptyCartFlag, emailResponse, lastIntent, accountMember,
-    // } = this.props;
-    // const { isContinueShoppingVisible, showClearCartModal, showLandingModal } = this.props.modalStatus;
     const {
       cqContent,
       totalItems,
@@ -86,6 +163,9 @@ class Index extends Component {
       accountMember,
       allowAAL,
       allowEUP,
+      standaloneAccessories,
+      accGuestCheckoutEnabled,
+      authenticated,
     } = this.props;
     const {
       isContinueShoppingVisible,
@@ -98,7 +178,7 @@ class Index extends Component {
       {asyncCallStatus.isFetching === true && <Loader />}
       <Modal
         mounted={isContinueShoppingVisible}
-        closeFn={this.onToggleContinueShopping.bind(this)}
+        closeFn={this.onToggleContinueShopping}
         style={{ width: '40%' }}
         showCloseX
       >
@@ -125,14 +205,14 @@ class Index extends Component {
       </Modal> */}
       <Modal
         mounted={showClearCartModal}
-        closeFn={() => this.onToggleClearCartModal()}
+        closeFn={this.onToggleClearCartModal}
         style={{ width: '40%' }}
         showCloseX
       >
         <ClearCartModal cqContent={cqContent} onToggleClearCartModal={this.onToggleClearCartModal} onClearCart={this.props.clearCart} />
       </Modal>
       <div className="border_e6 noTopBorder pad12">
-        <Row middle="xs">
+        <Row>
           <Col md={9} lg={9}>
             <Anchor
               className="block bold fontSize_4 textDecNone continueShop_link"
@@ -169,7 +249,7 @@ class Index extends Component {
                   </Row>
                   {/* <Anchor href="" className="floatRight fontSize_4 margin25 onlyTopMargin bold textDecUnderline textAlignRight">{cqContent.label.DT_OD_CART_BRING_YOUR_OWN_DEVICE}</Anchor> */}
                 </div>
-                {!accountMember &&
+                {!accountMember && (authenticated && !accGuestCheckoutEnabled) &&
                   <div className="margin24 onlyTopMargin">
                     <div className="margin12 onlySideMargin">
                       <Row middle="md">
@@ -196,6 +276,15 @@ class Index extends Component {
               </div>
               <DeviceDetails />
             </div>
+            {standaloneAccessories && !authenticated && accGuestCheckoutEnabled &&
+              <Row className="pad60 onlyTopPad">
+                <Col xs={12} >
+                  <p className="legal margin18 onlyBottomMargin">{cqContent.label.DT_OD_STANDALONE_ACCESSORY_CART_POBO_DISCLAIMER}</p>
+                  <p className="legal margin18 onlyBottomMargin">{cqContent.label.DT_OD_STANDALONE_ACCESSORY_CART_TAX_DISCLAIMER}</p>
+                  <p className="legal margin18 onlyBottomMargin">{cqContent.label.DT_OD_STANDALONE_ACCESSORY_CART_AVAILABILITY_DISCLAIMER}</p>
+                </Col>
+              </Row>
+            }
           </Col>
           <Col md={4} lg={3} sm={3} style={{ paddingLeft: 0 }}>
             <Sticky bottomBoundary="#app">
@@ -230,5 +319,12 @@ Index.propTypes = {
   accessoryShopURL: PropTypes.string,
   allowAAL: PropTypes.bool,
   allowEUP: PropTypes.bool,
+  authInfo: PropTypes.object,
+  masterpass3DSecure: PropTypes.object,
+  handle3dPaymentValidated: PropTypes.func,
+  showErrorNotification: PropTypes.func,
+  standaloneAccessories: PropTypes.bool,
+  accGuestCheckoutEnabled: PropTypes.bool,
+  authenticated: PropTypes.bool,
 };
 export default Index;

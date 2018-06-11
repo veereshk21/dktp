@@ -197,7 +197,15 @@ button:focus {
 /**************************************************
     Accessibility - Visible Focus
 ***************************************************/
-a:focus, button:focus, .button:focus, input[type=submit]:focus {
+a:focus,
+button:focus,
+.button:focus,
+input[type=submit]:focus,
+select:focus,
+.accordion__title:focus,
+.checkbox:focus~label:before,
+.radioBtn:focus+label:before {
     outline: #333 dotted 1px;
     outline-offset: 1px;
 }
+

@@ -34,16 +34,18 @@ const MSelect = (props) => {
   };
   const marginValue = marginTopValue || 28;
   const wrapperStyle = label ? { marginTop: marginValue } : {};
-  const LABEL_CLASSNAMES = `positionAbsolute fontSize_3 ${!borderStyle ? 'is-visuallyHidden' : ''}`;
+  const LABEL_CLASSNAMES = `positionAbsolute fontSize_3 bold ${!borderStyle ? 'is-visuallyHidden' : ''}`;
   return (
     <div className={WRAPPER_CLASS_NAME} style={wrapperStyle}>
-      <label
-        htmlFor={id}
-        className={LABEL_CLASSNAMES + labelClassName}
-        style={labelStyle}
-      >
-        {label}{required && <span aria-hidden="true">*</span>}
-      </label>
+      {label &&
+        <label
+          htmlFor={id}
+          className={LABEL_CLASSNAMES + labelClassName}
+          style={labelStyle}
+        >
+          {label}{required && <span aria-hidden="true">*</span>}
+        </label>
+      }
       <Field
         component="select"
         className={classNames}
@@ -62,6 +64,7 @@ const MSelect = (props) => {
         aria-hidden="true"
         style={styles.heightZero}
         floatingLabelStyle={styles.hidden}
+        disabled={rest.disabled}
       />
     </div>
   );
